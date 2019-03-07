@@ -1,0 +1,542 @@
+---
+title: Basic Plots for Visualizing the Distribution of Categorical and Continuous
+  Variables using Data from the General Social Survey
+author: "Bernhard Klingenberg"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  pdf_document:
+    toc: yes
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60))
+knitr::opts_chunk$set(fig.height=4, fig.width=6)
+```
+
+## 1. Loading the General Social Survey
+
+The entire database for the General Social Survey [GSS](http://gss.norc.org/) is made available online [here](http://gss.norc.org/get-the-data) as either a STATA or SPSS file. You will have to convert this to some form of delimited format (such as .csv), and then read it into R. Better yet, use the `foreign` package as this will retain factor level infomration, as I will illustrate here by loading the STATA file "GSS7216_R4.DTA" into R.
+```{r cache=TRUE}
+library(foreign)
+mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
+GSS <- read.dta(mypath)
+dim(GSS)
+```
+This file contains surveys all the way back to 1972. For now, let's just focus on the most recently available data, gathered in 2016. (The 2018 data will be released soon.)
+```{r}
+library(tidyverse)
+GSS2016 <- GSS %>% filter(year == 2016)
+dim(GSS2016)
+```
+Note: When reading in the GSS from the STAT file, all variable names are in lowercase letters, such as `year`. This may differ if you read in the data from a different source, where variable names may be in caps, such as `YEAR`. When reading in the STAT or SPSS file, information on the levels of a categorical variable are retained. If, on the other hand, you read in the .csv file (for instance the one that is posted on Canvas), you will lose information on factor levels.
+
+## 2. Showing the Distribution of a Categorical Variable: Bar Charts
+Let's analyze the answers of the GSS question "Taken all together, how would you say things are these days--would you say that you are very happy, pretty happy, or not too happy?". GSS calls this variable "HAPPY". You can find (and search) a list of all questions included on the GSS at the [GSS Data Explorer](https://gssdataexplorer.norc.org/), or, which I prefer, at the [Survey Documentation and Analysis (SDA)](http://sda.berkeley.edu/sdaweb/analysis/?dataset=gss16) website. The latter one shows more information on how the variable was coded.
+```{r}
+GSS2016.happy <- GSS2016 %>% select(happy)
+summary(GSS2016.happy$happy)
+```
+We see a bunch of zero cells (but the label was retained) and 8 NA's. Let's get ride of all these:
+```{r}
+GSS2016.happy.clean <- GSS2016.happy %>% drop_na() %>% droplevels()
+summary(GSS2016.happy.clean)
+```
+
+### 2.1 A simple barchart
+Load the `plotly` library:
+```{r}
+library(plotly)
+```
+Creat and interactive barchart. We will first do this with ggplot, and then call `gg_plotly()` to make it interactive:
+```{r}
+p <- ggplot(data=GSS2016.happy.clean, aes(x=happy)) + 
+  geom_bar() # showing percentages
+p
+ggplotly(p)
+```
+
+You can now perform several interactive tasks on this graph, such as hovering over a bar to display information, zoom in, change the x or y axis, save it as a .png, etc. 
+The amazig thing is that this doenss't just work within R Studio, but right there on the HTML that you knitted. Which means you can embed this graph in websites and still have all these interactions.
+
+We used the `ggplotly()` function to translate the ggplot graph into a plotly graph. However, I want to show "native"" programming with plotly as well. The reason is that not only is there a translation of the plotly.js javascript library into R, but there is also one into python, and the only difference is the different syntax between R and python, which is not that hard to overcome.
+
+Here is how you get the barchart using the native `plot_ly()` function of the `plotly` package, without going through ggplot. You will immediately notice some style differences:
+```{r}
+plot_ly(data=GSS2016.happy.clean, x=~happy)
+```
+
+That's impressive right out of the box, but there were some complaints, such as "No trace type specified: Based on info supplied, a 'histogram' trace seems appropriate." I actually want a bar chart, so I'd better tell plot_ly:
+```{r}
+plot_ly(data=GSS2016.happy.clean, x=~happy, type="bar")
+```
+
+Ups, this didn't work out, so it seems the `histogram` trace was appropriate:
+```{r}
+plot_ly(data=GSS2016.happy.clean, x=~happy, type="histogram")
+```
+See, no complaints anymore. It turns out, the `bar` trace can only be used on **summarized** data, i.e., when we just have the categories in one column, and the counts (or proportions) in the other column. Like this (note how I now provide both x and y variables in the `plot_ly()` call):
+```{r}
+plotdata <- GSS2016.happy.clean %>% group_by(happy) %>% summarize(count=n()) %>% ungroup
+plot_ly(data=plotdata, x=~happy, y=~count, type="bar")
+```
+
+At this point, it's worth pointing out the most important help pages when it comes to plotly. First, there is [https://plot.ly/r/](https://plot.ly/r/), which gives you a whole gallery of charts that you can click on to learn how they are created with plotly (i.e., go through a tutorial). The other one is Carston Sievert's (the author of the plotly package) [Plotly Cookbook](https://plotly-book.cpsievert.me/index.html). At times, it is a bit outdated, but I hear a second edition is coming out very soon! There is also a plotly cheat-sheet [here](https://images.plot.ly/plotly-documentation/images/r_cheat_sheet.pdf?_ga=2.118350793.1580199666.1551381693-782610902.1550704311). **However, to me, the most useful page is the documentation page of the various fnctions at [https://plot.ly/r/reference/](https://plot.ly/r/reference/).**
+
+
+### 2.2 Modifying the simple barchart
+How about editing the axis labels? This is done using the `layout()` command:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>% 
+  layout(xaxis = list(title = "Happiness"),
+         yaxis = list(title = "Frequency"))
+```
+
+What about editing the y-axis range? This is just another argument in the list that defines the yaxis, but which one? ggplot uses limits, but this is not the case for plotly. Better check the reference at [https://plot.ly/r/reference/](https://plot.ly/r/reference/) and click on layout and y axis. Aha, `range` is what we are looking for:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>% 
+  layout(xaxis = list(title = "Happiness"),
+         yaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+What about plotting the bar chart horizontally? With a bar trace, this is as simple as switching the x and y variables and using ` orientation='h'` (I also got ride of the y-axis label):
+```{r}
+plot_ly(plotdata, y=~happy, x=~count, type="bar", orientation='h') %>%
+    layout(yaxis = list(title = ""),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+Here, the y-axis labels could really go over two lines:
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, type="bar", orientation='h') %>%
+    layout(yaxis = list(title = ""),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+OK, but plotly doesn't draw ticks. If we want them, we can add them:
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, type="bar", orientation='h') %>%
+    layout(yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+Changing colors of the bars:
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, color="orange", type="bar", orientation='h') %>%
+    layout(yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+
+However, similar to ggplot, we can **map** a variable to color. (You might have realized that in the code above I did not have a tilde "~" sign for color, i.e., it was fixed and not mapped to anything.)
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, color=~happy, type="bar", orientation='h') %>%
+    layout(yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+Just like in ggplot, this does produce a legend, which in plotly is interactive. Clicking on a category in the legend hides the corresponding category (It doesn't recompute proportions, though)!
+
+We can also hide the legend:
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, color=~happy, type="bar", orientation='h') %>%
+    layout(showlegend = FALSE,
+           yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+Apropose hiding, we can hide most of the interactive tools (zooming, etc.) that appear on the top of every plotly plot using `config()` (this is burried deep in the documnetation):
+```{r}
+library(stringr)
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, color=~happy, type="bar", orientation='h') %>%
+    layout(showlegend = FALSE,
+           yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810))) %>%
+    config(collaborate = FALSE, displaylogo = FALSE, 
+           modeBarButtonsToRemove = list('resetScale2d', 'sendDataToCloud', 'zoom2d', 'zoomIn2d', 
+                                         'zoomOut2d', 'pan2d', 'select2d', 'lasso2d', 'hoverClosestCartesian', 
+                                         'hoverCompareCartesian', 'hoverClosestGl2d', 'hoverClosestPie', 
+                                         'toggleHover', 'resetViews', 'toggleSpikelines'))
+```
+
+To remove the entire set of tools, use `displayModebar=FALSE`.
+
+### 2.3 Using `markers` to modify color
+
+What if you want to override the default color choice for the bars? Here, the `marker` command helps, which gives fine control over the way the `markers` (=bars) look:
+
+```{r}
+#add color info to datase
+library(RColorBrewer)
+plotdata$mycol <- brewer.pal(12, "Set3")[c(12,7,5)]
+plotdata
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, type="bar", orientation='h',
+        marker = list(color = ~mycol)) %>%
+    layout(showlegend = FALSE,
+           yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+The `marker` command has other options, such as plotting a line around the bars:
+```{r}
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, type="bar", orientation='h',
+        marker = list(color = ~mycol, line = list(color = 'black', width = 1.5))) %>%
+    layout(showlegend = FALSE,
+           yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)))
+```
+
+### 2.4 Adding titles and subtitles
+This is unfortunately not as straightforward as just using `title=` and `subtitle=`. In fact, it is an `annotation` to the plot in `layout()`, but first the margins have to be adjusted via `margin` to make room for the title and subtitle. Let's demonstrate with the vertical bar chart:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>% 
+  layout(xaxis = list(title = "Happiness"),
+         yaxis = list(title = "Frequency", range=c(0,1810)),
+         margin = list(t=80),
+         annotations = list(text="Barchart of Happiness", showarrow=FALSE, font=list(size=19), x=0.5, xref='paper', xanchor='center', 
+                      y=1.2, yref='paper')
+  )
+```
+
+Adding a subtitle is just adding a second annotation:
+```{r}
+n <- sum(plotdata$count)
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>% 
+  layout(xaxis = list(title = "Happiness"),
+         yaxis = list(title = "Frequency", range=c(0,1810)),
+         margin = list(t=80),
+         annotations = list(text="Barchart of Happiness", showarrow=FALSE, font=list(size=19), x=0.5, xref='paper', xanchor='center', 
+                      y=1.2, yref='paper')
+  ) %>%
+  add_annotations(text=paste0("Based on the 2016 GSS with ",n," respondents"), showarrow=FALSE, font=list(size=16), x=0.5, xref='paper', xanchor='center', 
+                      y=1.12, yref='paper')
+```
+
+OK, let's try adding a title and subtitle to the vertical bar chart, but this time on the left side:
+```{r}
+plot_ly(plotdata, y=~str_wrap(happy,7), x=~count, type="bar", orientation='h',
+        marker = list(color = ~mycol)) %>%
+    layout(showlegend = FALSE,
+           yaxis = list(title = "", ticks="outside"),
+           xaxis = list(title = "Frequency", range=c(0,1810)),
+           margin = list(t=80),
+           annotations = list(text="Barchart of Happiness", showarrow=FALSE, font=list(size=19), x=0, xref='paper', xanchor='left', 
+                      y=1.2, yref='paper')
+    ) %>%
+    add_annotations(text=paste0("Based on the 2016 GSS with ",n," respondents"), showarrow=FALSE, font=list(size=16), x=0, xref='paper', xanchor='left', 
+                      y=1.12, yref='paper')
+```
+
+### 2.5 Customizing the hover information
+First, we can choose between different hover modes interactively in the chart. In the graph above, click on the "Compare Data on Hover" symbol in the top of the chart, then you will see the hover mode changing. We can also force this hover mode programmatically. Let's illustrate with a basic chart. The default is:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>%
+    layout(hovermode="closest")
+```
+
+Showing a different mode with labeling the x and y value on hover:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar") %>%
+    layout(hovermode="x+y")
+```
+
+
+Changing the text that is shown on hover:
+```{r}
+plot_ly(plotdata, x=~happy, y=~count, type="bar",
+        hovertext = paste("<b>Count:</b>", plotdata$count),
+        hoverinfo = "x+text"
+        ) %>%
+    layout(hovermode="x+y")
+```
+
+Showing both count and percentages on hover (and plotting percentages on the y-axis):
+```{r}
+plot_ly(plotdata, x=~happy, y=~100*(count/n), type="bar",
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "x+text"
+        ) %>%
+    layout(yaxis = list(title="Percent (%)"), hovermode="x+y")
+```
+
+### 2.6 Stacking
+First, let's color the bars:
+```{r}
+plot_ly(plotdata, x=~happy, y=~100*(count/n), color=~happy, type="bar",
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "x+text"
+        ) %>%
+    layout(yaxis = list(title="Percent (%)"), hovermode="x+y")
+```
+
+Now, suppose we want to turn this into a stacked bar chart. This means we do not have labels along the x-axis. Rather, the coloring of the bars will tell us which group we are in. Technically, we need to create an artifical grouping variable. I will just call it "1":
+```{r}
+plot_ly(plotdata, x=1, y=~100*(count/n), color=~happy, type="bar",
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "x+text"
+        ) %>%
+    layout(yaxis = list(title="Percent (%)"), hovermode="x+y")
+```
+
+Almost there. Unfortunately, plotly didn't put the bars on top of each other but next to each other. Using `barmode="stack"` in `layout()` takes care of this. Also, note how I changed `hoverinfo` and `hovermode` to get nice hover effects:
+```{r}
+plot_ly(plotdata, x=1, y=~100*(count/n), color=~happy, type="bar",
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "text"
+        ) %>%
+    layout(yaxis = list(title="Percent (%)"), 
+           hovermode ="closest",
+           barmode ="stack"
+          )
+```
+
+Finally, I want to flip the chart and use a vertical legend. We can access legend attributes via `legend=` in `layout()`. Here is how: 
+```{r fig.height=2}
+plot_ly(plotdata, y=1, x=~100*(count/n), color=~happy, type="bar", orientation='h',
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "text"
+        ) %>%
+    layout(xaxis = list(title="Percent (%)"), 
+           hovermode ="closest",
+           barmode ="stack",
+           legend = list(orientation="h",
+                         traceorder="normal")
+           )
+```
+
+
+Hmm, that put the legend in the bottom, which is plotly default behavior for `orientation='h'`. You can put the legend on top, by specifying `x=`, `xanchor=`, `y=` and `yanchor=`. I also adjusted the top margin a bit to make some room.
+```{r fig.height=2}
+plot_ly(plotdata, y=1, x=~100*(count/n), color=~happy, type="bar", orientation='h',
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "text"
+        ) %>%
+    layout(xaxis = list(title="Percent (%)"), 
+           hovermode = "closest",
+           barmode = "stack",
+           margin = list(t=80),
+           legend = list(orientation="h",
+                         traceorder="normal",
+                         x=0, xanchor="left",
+                         y=1.4, yanchor="left")
+           )
+```
+
+The final modification I will do here is hide the y-axis:
+```{r fig.height=2}
+plot_ly(plotdata, y=1, x=~100*(count/n), color=~happy, type="bar", orientation='h',
+        hovertext = paste("<b>Count:</b>", plotdata$count, "<br><b>Percent:</b>", paste0(round(100*plotdata$count/n,2),"%")),
+        hoverinfo = "text"
+        ) %>%
+    layout(xaxis = list(title="Percent (%)"),
+           yaxis = list(visible=FALSE),
+           hovermode ="closest",
+           barmode ="stack",
+           margin = list(t=80),
+           legend = list(orientation="h",
+                         traceorder="normal",
+                         x=0, xanchor="left",
+                         y=1.4, yanchor="left")
+           )
+```
+
+Some modifications to consider: Add a title and perhaps add a legend title. Both can be done with annotations.
+
+## 3 Pie charts
+
+```{r}
+df <- GSS2016 %>%
+    filter(year == 2016) %>%
+    select(courts) %>%
+    drop_na() %>%
+    droplevels() %>%
+    group_by(courts) %>%
+    summarise(count = n())
+
+# put the levels in logical order
+df$courts <- ordered(df$courts, levels =c("not harsh enough", "about right", "too harsh"))
+
+# set up colors
+library(wesanderson)
+df$mycol2 <- wes_palette("BottleRocket2")[3:5]
+
+# set up axis:
+ax <- list(
+    title = '',
+    zeroline = FALSE,
+    showline = FALSE,
+    showticklabels = FALSE,
+    showgrid = FALSE
+)
+
+# set up title font
+title_font <- list(
+  family = "Raleway, Gill Sans, Agency FB, Arial",
+  size = 20,
+  color = "black")
+
+
+# set up title 
+title1 <- list(
+  text = "Views on the Harshness of Local Courts in the U.S.",
+  font = title_font,
+  xref = "paper", 
+  yref = "paper",
+  yanchor = "bottom", 
+  xanchor = "left",
+  align = "left",
+  x = 0, y = 1.2,
+  showarrow = FALSE
+)
+
+# set up subtitle
+subtitle1 <- list(
+  text = "Data from 2016 General Social Survey",
+  font = list(family = "Raleway, Gill Sans, Agency FB, Arial", size = 14, color = "black"),
+  xref = "paper", 
+  yref = "paper",
+  yanchor = "bottom", 
+  xanchor = "left",
+  align = "left",
+  x = 0, y = 1.1,
+  showarrow = FALSE
+)
+
+plot_ly(df, type = 'pie',
+        labels = ~courts, values = ~count,
+        marker = list(colors = ~mycol2, 
+                      line = list(color = '#FFFFFF', width = 1)), # this bit adds the white lines
+        textinfo = 'label+percent',
+        hoverinfo = 'text',
+        text = ~paste(count, ' respondents'),
+        insidetextfont = list(color = '#FFFFFF'),
+        showlegend = FALSE,
+        height = 450, width = 700) %>% 
+  layout(xaxis = ax,
+         yaxis = ax, 
+         margin = 10) %>%
+    layout(annotations = title1) %>%
+    layout(annotations = subtitle1) %>%
+    config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+```
+
+## 4 Histograms
+
+```{r}
+df2 <- GSS %>%
+    filter(year %in% (1990:1994)) %>%
+    drop_na(agewed) %>%
+    select(agewed) 
+
+blu <- wes_palette("FantasticFox1")[3]
+
+# set up title 
+title2 <- list(
+  text = "Age of U.S. Respondents When First Married",
+  font = title_font,
+  xref = "paper", 
+  yref = "paper",
+  yanchor = "bottom", 
+  xanchor = "left",
+  align = "left",
+  x = 0, y = 1.2,
+  showarrow = FALSE
+)
+
+# set up subtitle
+subtitle2 <- list(
+  text = "Data from General Social Survey (1990 to 1994)",
+  font = list(family = "Raleway, Gill Sans, Agency FB, Arial", size = 14, color = "black"),
+  xref = "paper", 
+  yref = "paper",
+  yanchor = "bottom", 
+  xanchor = "left",
+  align = "left",
+  x = 0, y = 1.1,
+  showarrow = FALSE
+)
+x_ax <- list(
+    title = 'Age at First Marriage',
+    range = c(0, 65),
+    zeroline = TRUE,
+    showline = TRUE,
+    showticklabels = TRUE,
+    showgrid = TRUE
+)
+
+y_ax <- list(
+    title = 'Frequency'
+)
+
+plot_ly(data = df2, x = ~agewed, type = 'histogram', 
+        marker = list(color = blu)) %>%
+    layout(xaxis = x_ax,
+           yaxis = y_ax,
+           margin = list(t=100),
+           hovermode="common") %>%
+    layout(annotations = title2) %>%
+    layout(annotations = subtitle2) %>%
+    config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+```
+
+## 5 Boxplots
+
+```{r fig.width=3.5}
+vgiven <- GSS %>% filter(year==2014) %>% select(valgiven) %>% drop_na() %>% droplevels()
+
+large_donation <- vgiven %>%
+  filter(valgiven > 1000)
+
+n <- nrow(large_donation)
+
+# hide axis
+ax <- list(
+  title = "",
+  zeroline = FALSE,
+  showline = FALSE,
+  showticklabels = FALSE,
+  showgrid = FALSE
+)
+
+plot_ly(large_donation, type = "box",
+        y = ~valgiven,
+        marker = list(color = "green", opacity=0.7, size=6, 
+                      line = list(color = '#000000', width = 1, opacity=0.7)
+        ), #these are the outliers
+        fillcolor ="green", line=list(color="#000000", width=1.5),
+        boxpoints = "outliers", jitter = 0.2,
+        hoverinfo = "text+x"
+  ) %>%
+  layout(yaxis = list(range = c(0, 27000), title = "Yearly donation(dollars)"), 
+         xaxis = ax,
+         margin = list(t = 80),
+         annotations = list(text = "Distribution of Large Donations", 
+         showarrow = FALSE, font = list(size = 14), x = 0, y = 1.2, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper")
+  ) %>% 
+  add_annotations(text = paste0("From GSS 2014: n = ", n), 
+         showarrow = FALSE, font = list(size = 12), x = 0, y = 1.13, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper"
+  ) %>%
+  config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+```
+
+## 6 Side-by-Side Boxplots and Histograms
+
+## 7 Side-by-Side Bar Charts
+
+
+
+
+
+
+
