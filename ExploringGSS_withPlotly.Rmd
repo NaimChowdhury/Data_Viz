@@ -23,7 +23,8 @@ knitr::opts_chunk$set(fig.height=4, fig.width=6)
 The entire database for the General Social Survey [GSS](http://gss.norc.org/) is made available online [here](http://gss.norc.org/get-the-data) as either a STATA or SPSS file. You will have to convert this to some form of delimited format (such as .csv), and then read it into R. Better yet, use the `foreign` package as this will retain factor level infomration, as I will illustrate here by loading the STATA file "GSS7216_R4.DTA" into R.
 ```{r cache=TRUE}
 library(foreign)
-mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
+#mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
+mypath <- "GSS7216_R4.DTA"
 GSS <- read.dta(mypath)
 dim(GSS)
 ```
@@ -534,6 +535,58 @@ plot_ly(large_donation, type = "box",
 
 ## 7 Side-by-Side Bar Charts
 
+## 8 Scatterplot
+
+### Greg's code:
+
+```{r}
+
+gss2008 <- GSS %>%
+  filter(year == 2008)
+
+#subset varriables of interest:
+
+#realrinc = respondents income in dolars
+#age =  age of respondent 
+#findnwjb = how likely to find job with same or better benfits
+
+better <- gss2008 %>%
+  select(age,realinc,findnwjb) %>%
+  drop_na() %>%
+  droplevels() 
+
+head(better)
+
+```
+
+```{r}
+
+total <- nrow(gss2008)
+colors2 <-brewer.pal(12,"Spectral")[c(1, 4,10)]
+legendtitle <- list(yref='paper',xref="paper",y=.75,x=1.45, text="<b>Ease of finding  \n new employment:<b>",showarrow=F, xanchor = "right")
+
+#formating hover text:
+
+#adding commas and $ sign
+ftext <- better$realinc
+ftext <-  prettyNum(ftext,big.mark=",",scientific=FALSE)
+better$ftext <- paste("$ ",ftext, sep="")
+
+plot_ly(better, x= ~age, y = ~realinc, color = ~findnwjb, colors = colors2, hovertext = paste("<b>Ease:</b>", better$findnwjb,"<br><b>Age:</b>", better$age,"<br><b>Income:</b>", 
+  better$ftext), hoverinfo = "text") %>%
+  layout(yaxis = list(range = c(0, 80000),title = "Real Income (dollars)"), xaxis = list(title = "Age")) %>%
+  layout(margin = list(t = 80),
+         annotations = list(text = "Age and Income as factors for finding new employment", 
+         showarrow = FALSE, font = list(size = 19), x = 0, y = 1.21, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper")) %>% 
+  layout(annotations = list(text = paste0("From GSS 2008: n = ", total), 
+         showarrow = FALSE, font = list(size = 16), x = 0, y = 1.13, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper")) %>%
+  layout(annotations=legendtitle)%>%
+  layout(legend=list(yref='paper',xref="paper",x=1.05, y= .5)) %>%
+  config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+
+```
 
 
 
