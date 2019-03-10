@@ -607,7 +607,7 @@ age_child_plot <- ggplot(age_child_mung, aes(x=Age, y=Children)) +
 
 ggplotly(age_child_plot, tooltip = "text") %>%
   layout(xaxis = list(title = 'Age'),yaxis = list(title = 'Number of Children'), margin = list(b = 60, t = 80),annotations = list(text = "Relationship between Age and Number of Children", font = list(size = 19), x = 0.5, xref = "paper", xanchor = "center", y = 1.2, yref = "paper", showarrow = FALSE)) %>% 
-  add_annotations(text = paste0("Based on the 2016 GSS with 2849 respondents"), showarrow = FALSE, font = list(size = 16), x = 0.5, xref = "paper", xanchor = "center", y = 1.12, yref = "paper")
+  add_annotations(text = paste0("Based on the 2016 GSS with 2825 respondents"), showarrow = FALSE, font = list(size = 16), x = 0.5, xref = "paper", xanchor = "center", y = 1.12, yref = "paper")
 
 ```
 
