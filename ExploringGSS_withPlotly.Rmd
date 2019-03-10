@@ -588,7 +588,27 @@ plot_ly(better, x= ~age, y = ~realinc, color = ~findnwjb, colors = colors2, hove
 
 ```
 
+### Austin's code:
 
+```{r}
+
+age_child_mung <- GSS2016 %>%
+  select(age, childs) %>%
+  drop_na(age, childs)
+
+age_child_mung <- rename(age_child_mung, Age = age, Children = childs)
+
+
+age_child_plot <- ggplot(age_child_mung, aes(x=Age, y=Children)) +
+  geom_jitter(height = 0.2, alpha = 0.15) +
+  geom_smooth()
+
+
+ggplotly(age_child_plot) %>%
+  layout(xaxis = list(title = 'Age'),yaxis = list(title = 'Number of Children'), margin = list(b = 60, t = 80),annotations = list(text = "Relationship between Age and Number of Children", font = list(size = 19), x = 0.5, xref = "paper", xanchor = "center", y = 1.2, yref = "paper", showarrow = FALSE)) %>% 
+  add_annotations(text = paste0("Based on the 2016 GSS with 2849 respondents"), showarrow = FALSE, font = list(size = 16), x = 0.5, xref = "paper", xanchor = "center", y = 1.12, yref = "paper")
+
+```
 
 
 
