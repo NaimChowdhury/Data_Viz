@@ -540,9 +540,9 @@ plot_ly(large_donation, type = "box",
 ### Daavid's code:
 
 ```{r}
-tv <- GSS_2016 %>% filter(TVHOURS != "NA", AGE != "NA", RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>%  select(ID,TVHOURS)  
+tv <- GSS2016 %>% filter(TVHOURS != "NA", AGE != "NA", RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>%  select(ID,TVHOURS)  
 #REMOVE NAs, filter out categorical values, convert to numeric type
-age <- GSS_2016 %>% filter(TVHOURS != "NA", AGE != "NA",RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>% select(ID, AGE) 
+age <- GSS2016 %>% filter(TVHOURS != "NA", AGE != "NA",RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>% select(ID, AGE) 
 race <- GSS_2016 %>% filter(TVHOURS != "NA", AGE != "NA",RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>% select(ID,RACE)
 
 my_data <-inner_join(as.data.frame(age), as.data.frame(tv))
