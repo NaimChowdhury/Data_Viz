@@ -23,6 +23,7 @@ knitr::opts_chunk$set(fig.height=4, fig.width=6)
 The entire database for the General Social Survey [GSS](http://gss.norc.org/) is made available online [here](http://gss.norc.org/get-the-data) as either a STATA or SPSS file. You will have to convert this to some form of delimited format (such as .csv), and then read it into R. Better yet, use the `foreign` package as this will retain factor level infomration, as I will illustrate here by loading the STATA file "GSS7216_R4.DTA" into R.
 ```{r cache=TRUE}
 library(foreign)
+
 #mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
 mypath <- "GSS7216_R4.DTA"
 GSS <- read.dta(mypath)
@@ -611,6 +612,65 @@ ggplotly(age_child_plot, tooltip = "text") %>%
 
 ```
 
+### Diana's code:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+GSS2016 <- GSS%>% filter(year==2016)
+# I would like to see if there is a relationship between age and the working hours. 
+hours_age <- GSS2016 %>% select(hrs1,age)
+head(hours_age)
+
+# Create a scatterplot using ggplot and convert it to ggplotly
+scatter <- ggplot(hours_age,aes(x = age, y = hrs1))+ geom_point()
+ggplotly()
+
+# Basic scatterplot using plot_ly
+p <- plot_ly(data = hours_age, x = ~age, y = ~hrs1)
+p
+
+f <- list(
+  family = "Courier New, monospace",
+  size = 18,
+  color = "#7f7f7f"
+)
+x <- list(
+  title = "Age",
+  titlefont = f
+)
+y <- list(
+  title = "Working Hours per Week",
+  titlefont = f
+)
+ 
+  
+# Styled scatterplot using plot_ly
+scatterplot <- plot_ly(data = hours_age, x = ~age, y = ~hrs1, type = "scatter",
+                       mode ="markers",
+                       marker = list(size = 5,
+                       color = 'rgba(255, 182, 193, .9)',
+                       line = list(color = 'rgba(152, 0, 0, .8)',
+                                   width = 1))) %>%
+                       layout(annotations = list(
+                         text = "Relationship between Age and Working hours", 
+                         font = list(size = 19), x = 0.5, 
+                         xref = "paper", showarrow = FALSE,
+                         xanchor = "center", 
+                         y = 1.05, 
+                         yref = "paper"),
+                         yaxis = y,
+                         xaxis = x)
+                
+
+
+scatterplot
+
+
+
+```
 
 
 
