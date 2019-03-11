@@ -540,19 +540,19 @@ plot_ly(large_donation, type = "box",
 ### Daavid's code:
 
 ```{r}
-tv <- GSS2016 %>% filter(TVHOURS != "NA", AGE != "NA", RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>%  select(ID,TVHOURS)  
+tv <- GSS2016 %>% filter(tvhours != "NA", age != "NA", race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>%  select(id,tvhours)  
 #REMOVE NAs, filter out categorical values, convert to numeric type
-age <- GSS2016 %>% filter(TVHOURS != "NA", AGE != "NA",RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>% select(ID, AGE) 
-race <- GSS2016 %>% filter(TVHOURS != "NA", AGE != "NA",RACE != "NA", as.numeric(TVHOURS) > -1 && as.numeric(TVHOURS) < 98, as.numeric(AGE) < 98) %>% select(ID,RACE)
+age <- GSS2016 %>% filter(tvhours != "NA", age != "NA",race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>% select(id, age) 
+race <- GSS2016 %>% filter(tvhours != "NA", age != "NA",race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>% select(id,race)
 
 my_data <-inner_join(as.data.frame(age), as.data.frame(tv))
 my_data <-inner_join(my_data,race)
 
 
-p <- plot_ly(my_data, x = ~AGE, y = ~TVHOURS) %>%  layout(yaxis = list(title = "TV Hours"),
+p <- plot_ly(my_data, x = ~age, y = ~tvhours) %>%  layout(yaxis = list(title = "TV Hours"),
                                           xaxis = list(title ="Age"),
                                           annotations = list(text = "Respondent's Age vs Hours Per Day Watching TV", showarrow = FALSE, font = list(size = 19), x = 0.5, xref = "paper", xanchor = "center", 
-                                                             y = 1.05, yref = "paper")) %>% add_markers(color =~RACE)
+                                                             y = 1.05, yref = "paper")) %>% add_markers(color =~race)
 p
 
 
