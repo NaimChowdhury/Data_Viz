@@ -739,3 +739,78 @@ plot_ly(data, x = ~age, y = ~realrinc, type = "scatter", color = ~degree,
          modeBarButtonsToRemove = to_remove)
 ```
 
+### James' code
+Let's start by getting the data into the right form and taking a look at the correlation. 
+```{r}
+# munge data to show two variables of interest
+plot_data <- GSS2016 %>%
+             #filter(sex == 'female') %>% correlation is higher when we look at women respondents
+             select(prestg105plus, sppres105plus) %>%
+             drop_na(prestg105plus, sppres105plus)
+
+# fit a linear model
+fit <- lm(sppres105plus ~ prestg105plus, data = plot_data); fit
+
+# determine correlation
+r <- cor(plot_data$prestg105plus, plot_data$sppres105plus); r
+```
+
+Here's the code to plot in plotly. 
+```{r}
+# set up title font
+title_font <- list(
+  family = "Gill Sans, Agency FB, Arial",
+  size = 20)
+
+# set up subtitle font
+subtitle_font <- list(
+  family = "Gill Sans, Agency FB, Arial",
+  size = 16)
+
+# set up title formatting
+title <- list(
+  text = "Relationship Between Job Prestige of R and Spouse",
+  font = title_font,
+  xref = "paper", yref = "paper",
+  yanchor = "bottom", xanchor = "left",
+  align = "left", x = 0, y = 1.2, 
+  showarrow = FALSE
+)
+
+# set up subtitle formatting
+subtitle <- list(
+  text = "Based on data from the General Social Survey (2016)",
+  font = subtitle_font,
+  xref = "paper", yref = "paper",
+  yanchor = "bottom", xanchor = "left",
+  align = "left", x = 0, y = 1.1, 
+  showarrow = FALSE
+)
+
+# plot data in plotly
+plot_ly(data = plot_data, x = ~prestg105plus, y = ~sppres105plus, 
+        height = 500, width = 700) %>%
+    
+        add_trace(type = "scatter", mode = "markers", hoverinfo = 'text',
+                  text = paste("R's prestige: ", plot_data$prestg105plus, "<br>", 
+                           "Spouse's prestige: ", plot_data$sppres105plus),
+                  marker = list(size = 5, 
+                                color = wes_palette("Zissou1")[1],
+                                opacity = .33), 
+                  showlegend = FALSE) %>%
+    
+        add_trace(x = ~prestg105plus, y = fitted(fit), mode = "lines", 
+                  name = "Smooth", 
+                  line = list(width = 2, 
+                              color = wes_palette("Zissou1")[4])) %>%
+    
+        layout(xaxis = list(title = "Respondent's Job Prestige Score", range = c(0, 100)), 
+               yaxis = list(title = "Spouse's Job Prestige Score", ticks = "outside"), 
+               margin = 10, hovermode = 'closest')  %>%
+    
+    layout(annotations = title) %>%
+    layout(annotations = subtitle) %>%
+    config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+```
+
+
