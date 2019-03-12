@@ -691,5 +691,51 @@ scatterplot
 
 ```
 
+###Sonia's code
+```{r}
+GSS2016 <- GSS %>% filter(year == 2016)
+library(dplyr)
+#subset data
+sonia_vars <- GSS2016[,c("age", "realrinc", "degree")]
+sonia_vars$degree <- as.numeric(sonia_vars$degree)
+data <- sonia_vars %>% filter(sonia_vars$age %in% 22:65, sonia_vars$realrinc %in% 10000:150000, sonia_vars$degree %in% 2:4) 
+data $degree <- recode_factor(data$degree, '2'="Undergraduate", '3'="Undergraduate", '4'="Graduate")
+n<- nrow(data)
 
+
+#Define all buttons on visualizations that I do not want to appear
+to_remove <- c("resetScale2d",  "sendDataToCloud", "zoom2d","zoomOut2d", "select2d", "lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "resetViews", "toggleSpikelines")
+```
+
+```{r}
+#Create scatterplot
+plot_ly(data, x = ~age, y = ~realrinc, type = "scatter", color = ~degree,
+              mode = "markers", 
+              colors = c("orange", "blue"),
+              hoverinfo = "x+y") %>%
+   layout(margin = list(t = 80),
+         xaxis = list(title = 'age'),
+         yaxis = list(title = 'Annual Income',
+                      tickvals = seq(10,80,10)*1000,
+                      ticktext = paste0("$", seq(10,80,10), "k")),
+         annotations = list(text = "Scatter Plot of Age and Annual Income by College Degree",
+                            showarrow = FALSE, 
+                            font = list(size = 19), 
+                            x = 0.65, 
+                            xref = "paper", 
+                            xanchor = "center", 
+                            y = 1.2, 
+                            yref = "paper")) %>%
+  add_annotations(text = paste0("Based on the 2016 GSS with ", n, " respondents"), 
+                  showarrow = FALSE, 
+                  font = list(size = 16), 
+                  x = .6, 
+                  xref = "paper", 
+                  xanchor = "center", 
+                  y = 1.1, 
+                  yref = "paper") %>% 
+  config(collaborate = FALSE, 
+         displaylogo = FALSE, 
+         modeBarButtonsToRemove = to_remove)
+```
 
