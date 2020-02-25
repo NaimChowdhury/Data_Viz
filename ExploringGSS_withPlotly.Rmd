@@ -23,7 +23,9 @@ knitr::opts_chunk$set(fig.height=4, fig.width=6)
 The entire database for the General Social Survey [GSS](http://gss.norc.org/) is made available online [here](http://gss.norc.org/get-the-data) as either a STATA or SPSS file. You will have to convert this to some form of delimited format (such as .csv), and then read it into R. Better yet, use the `foreign` package as this will retain factor level infomration, as I will illustrate here by loading the STATA file "GSS7216_R4.DTA" into R.
 ```{r cache=TRUE}
 library(foreign)
-mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
+
+#mypath <- "C:/Teaching/NewCollege/DataViz/GSS7216_R4.DTA"
+mypath <- "GSS7216_R4.DTA"
 GSS <- read.dta(mypath)
 dim(GSS)
 ```
@@ -534,9 +536,281 @@ plot_ly(large_donation, type = "box",
 
 ## 7 Side-by-Side Bar Charts
 
+## 8 Scatterplot
+### Daavid's code:
+
+```{r}
+tv <- GSS2016 %>% filter(tvhours != "NA", age != "NA", race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>%  select(id,tvhours)  
+#REMOVE NAs, filter out categorical values, convert to numeric type
+age <- GSS2016 %>% filter(tvhours != "NA", age != "NA",race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>% select(id, age) 
+race <- GSS2016 %>% filter(tvhours != "NA", age != "NA",race != "NA", as.numeric(tvhours) > -1 && as.numeric(tvhours) < 98, as.numeric(age) < 98) %>% select(id,race)
+
+my_data <-inner_join(as.data.frame(age), as.data.frame(tv))
+my_data <-inner_join(my_data,race)
+
+
+p <- plot_ly(my_data, x = ~age, y = ~tvhours) %>%  layout(yaxis = list(title = "TV Hours"),
+                                          xaxis = list(title ="Age"),
+                                          annotations = list(text = "Respondent's Age vs Hours Per Day Watching TV", showarrow = FALSE, font = list(size = 19), x = 0.5, xref = "paper", xanchor = "center", 
+                                                             y = 1.05, yref = "paper")) %>% add_markers(color =~race)
+p
+
+
+```
+### Greg's code:
+
+```{r}
+
+gss2008 <- GSS %>%
+  filter(year == 2008)
+
+#subset varriables of interest:
+
+#realrinc = respondents income in dolars
+#age =  age of respondent 
+#findnwjb = how likely to find job with same or better benfits
+
+better <- gss2008 %>%
+  select(age,realinc,findnwjb) %>%
+  drop_na() %>%
+  droplevels() 
+
+head(better)
+
+```
+
+```{r}
+
+total <- nrow(gss2008)
+colors2 <-brewer.pal(12,"Spectral")[c(1, 4,10)]
+legendtitle <- list(yref='paper',xref="paper",y=.75,x=1.45, text="<b>Ease of finding  \n new employment:<b>",showarrow=F, xanchor = "right")
+
+#formating hover text:
+
+#adding commas and $ sign
+ftext <- better$realinc
+ftext <-  prettyNum(ftext,big.mark=",",scientific=FALSE)
+better$ftext <- paste("$ ",ftext, sep="")
+
+plot_ly(better, x= ~age, y = ~realinc, color = ~findnwjb, colors = colors2, hovertext = paste("<b>Ease:</b>", better$findnwjb,"<br><b>Age:</b>", better$age,"<br><b>Income:</b>", 
+  better$ftext), hoverinfo = "text") %>%
+  layout(yaxis = list(range = c(0, 80000),title = "Real Income (dollars)"), xaxis = list(title = "Age")) %>%
+  layout(margin = list(t = 80),
+         annotations = list(text = "Age and Income as factors for finding new employment", 
+         showarrow = FALSE, font = list(size = 19), x = 0, y = 1.21, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper")) %>% 
+  layout(annotations = list(text = paste0("From GSS 2008: n = ", total), 
+         showarrow = FALSE, font = list(size = 16), x = 0, y = 1.13, xref = "paper", 
+         xanchor = "left", y = 1.1, yref = "paper")) %>%
+  layout(annotations=legendtitle)%>%
+  layout(legend=list(yref='paper',xref="paper",x=1.05, y= .5)) %>%
+  config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+
+```
+
+### Austin's code:
+
+```{r}
+
+age_child_mung <- GSS2016 %>%
+  select(age, childs, babies) %>%
+  drop_na(age, childs, babies)
+
+age_child_mung$babies <- as.factor(age_child_mung$babies)
+age_child_mung <- rename(age_child_mung, Age = age, Children = childs, Babies = babies)
+
+age_child_plot <- ggplot(age_child_mung, aes(x=Age, y=Children)) +
+  geom_jitter(aes(color = Babies, text=paste0("<b>Age: </b>", Age,"<br><b>Children: </b>", Children, "<br><b>Babies: </b>", Babies)), height = 0.2, alpha = 0.25) +
+  scale_colour_manual(values = c("#333333", "green", "red", "blue", "orange")) +
+  geom_smooth() +
+  theme(legend.position = 'right')
+
+ggplotly(age_child_plot, tooltip = "text") %>%
+  layout(xaxis = list(title = 'Age'),yaxis = list(title = 'Number of Children'), margin = list(b = 60, t = 80),annotations = list(text = "Relationship between Age and Number of Children", font = list(size = 19), x = 0.5, xref = "paper", xanchor = "center", y = 1.2, yref = "paper", showarrow = FALSE)) %>% 
+  add_annotations(text = paste0("Based on the 2016 GSS with 2825 respondents"), showarrow = FALSE, font = list(size = 16), x = 0.5, xref = "paper", xanchor = "center", y = 1.12, yref = "paper")
+
+```
+
+### Diana's code:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+GSS2016 <- GSS%>% filter(year==2016)
+# I would like to see if there is a relationship between age and the working hours. 
+hours_age <- GSS2016 %>% select(hrs1,age)
+head(hours_age)
+
+# Create a scatterplot using ggplot and convert it to ggplotly
+scatter <- ggplot(hours_age,aes(x = age, y = hrs1))+ geom_point()
+ggplotly()
+
+# Basic scatterplot using plot_ly
+p <- plot_ly(data = hours_age, x = ~age, y = ~hrs1)
+p
+
+f <- list(
+  family = "Courier New, monospace",
+  size = 18,
+  color = "#7f7f7f"
+)
+x <- list(
+  title = "Age",
+  titlefont = f
+)
+y <- list(
+  title = "Working Hours per Week",
+  titlefont = f
+)
+ 
+  
+# Styled scatterplot using plot_ly
+scatterplot <- plot_ly(data = hours_age, x = ~age, y = ~hrs1, type = "scatter",
+                       mode ="markers",
+                       marker = list(size = 5,
+                       color = 'rgba(255, 182, 193, .9)',
+                       line = list(color = 'rgba(152, 0, 0, .8)',
+                                   width = 1))) %>%
+                       layout(annotations = list(
+                         text = "Relationship between Age and Working hours", 
+                         font = list(size = 19), x = 0.5, 
+                         xref = "paper", showarrow = FALSE,
+                         xanchor = "center", 
+                         y = 1.05, 
+                         yref = "paper"),
+                         yaxis = y,
+                         xaxis = x)
+                
+
+
+scatterplot
 
 
 
+```
 
+###Sonia's code
+```{r}
+GSS2016 <- GSS %>% filter(year == 2016)
+library(dplyr)
+#subset data
+sonia_vars <- GSS2016[,c("age", "realrinc", "degree")]
+sonia_vars$degree <- as.numeric(sonia_vars$degree)
+data <- sonia_vars %>% filter(sonia_vars$age %in% 22:65, sonia_vars$realrinc %in% 10000:150000, sonia_vars$degree %in% 2:4) 
+data $degree <- recode_factor(data$degree, '2'="Undergraduate", '3'="Undergraduate", '4'="Graduate")
+n<- nrow(data)
+
+
+#Define all buttons on visualizations that I do not want to appear
+to_remove <- c("resetScale2d",  "sendDataToCloud", "zoom2d","zoomOut2d", "select2d", "lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "resetViews", "toggleSpikelines")
+```
+
+```{r}
+#Create scatterplot
+plot_ly(data, x = ~age, y = ~realrinc, type = "scatter", color = ~degree,
+              mode = "markers", 
+              colors = c("orange", "blue"),
+              hoverinfo = "x+y") %>%
+   layout(margin = list(t = 80),
+         xaxis = list(title = 'age'),
+         yaxis = list(title = 'Annual Income',
+                      tickvals = seq(10,80,10)*1000,
+                      ticktext = paste0("$", seq(10,80,10), "k")),
+         annotations = list(text = "Scatter Plot of Age and Annual Income by College Degree",
+                            showarrow = FALSE, 
+                            font = list(size = 19), 
+                            x = 0.65, 
+                            xref = "paper", 
+                            xanchor = "center", 
+                            y = 1.2, 
+                            yref = "paper")) %>%
+  add_annotations(text = paste0("Based on the 2016 GSS with ", n, " respondents"), 
+                  showarrow = FALSE, 
+                  font = list(size = 16), 
+                  x = .6, 
+                  xref = "paper", 
+                  xanchor = "center", 
+                  y = 1.1, 
+                  yref = "paper") %>% 
+  config(collaborate = FALSE, 
+         displaylogo = FALSE, 
+         modeBarButtonsToRemove = to_remove)
+```
+
+### James' code
+Let's start by getting the data into the right form and taking a look at the correlation. 
+```{r}
+# munge data to show two variables of interest
+plot_data <- GSS2016 %>%
+             #filter(sex == 'female') %>% correlation is higher when we look at women respondents
+             select(prestg105plus, sppres105plus) %>%
+             drop_na(prestg105plus, sppres105plus)
+
+# fit a linear model
+fit <- lm(sppres105plus ~ prestg105plus, data = plot_data); fit
+
+# determine correlation
+r <- cor(plot_data$prestg105plus, plot_data$sppres105plus); r
+```
+
+Here's the code to plot in plotly. 
+```{r}
+# set up title font
+title_font <- list(
+  family = "Gill Sans, Agency FB, Arial",
+  size = 20)
+
+# set up subtitle font
+subtitle_font <- list(
+  family = "Gill Sans, Agency FB, Arial",
+  size = 16)
+
+# set up title formatting
+title <- list(
+  text = "Relationship Between Job Prestige of R and Spouse",
+  font = title_font,
+  xref = "paper", yref = "paper",
+  yanchor = "bottom", xanchor = "left",
+  align = "left", x = 0, y = 1.2, 
+  showarrow = FALSE
+)
+
+# set up subtitle formatting
+subtitle <- list(
+  text = "Based on data from the General Social Survey (2016)",
+  font = subtitle_font,
+  xref = "paper", yref = "paper",
+  yanchor = "bottom", xanchor = "left",
+  align = "left", x = 0, y = 1.1, 
+  showarrow = FALSE
+)
+
+# plot data in plotly
+plot_ly(data = plot_data, x = ~prestg105plus, y = ~sppres105plus, 
+        height = 500, width = 700) %>%
+    
+        add_trace(type = "scatter", mode = "markers", hoverinfo = 'text',
+                  text = paste("R's prestige: ", plot_data$prestg105plus, "<br>", 
+                           "Spouse's prestige: ", plot_data$sppres105plus),
+                  marker = list(size = 5, 
+                                color = wes_palette("Zissou1")[1],
+                                opacity = .33), 
+                  showlegend = FALSE) %>%
+    
+        add_trace(x = ~prestg105plus, y = fitted(fit), mode = "lines", 
+                  name = "Smooth", 
+                  line = list(width = 2, 
+                              color = wes_palette("Zissou1")[4])) %>%
+    
+        layout(xaxis = list(title = "Respondent's Job Prestige Score", range = c(0, 100)), 
+               yaxis = list(title = "Spouse's Job Prestige Score", ticks = "outside"), 
+               margin = 10, hovermode = 'closest')  %>%
+    
+    layout(annotations = title) %>%
+    layout(annotations = subtitle) %>%
+    config(collaborate = FALSE, displaylogo = FALSE, displayModeBar = FALSE)
+```
 
 
