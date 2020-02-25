@@ -14,12 +14,76 @@ knitr::opts_chunk$set(echo = TRUE)
 ## 1. Lending Club Data
 We already started working on this at the end of class, but now finish creatin a graph that compares the distribution (in terms of percentages) of one categorical varaible (with at least three categories) for given levels of another categorical variable (with also at least 3 categories) through 
   
+### Data Read-in
+```{r}
+library(tidyr)
+library(tidyverse)
+
+
+
+sample <- read_csv('C:\\Users\\Naeem Cho\\Desktop\\School Work\\Data_Viz\\Datasets\\LendingClubLoanData.csv', n_max = 10000)
+
+id.unique <- sample %>% distinct(id, .keep_all = TRUE)
+
+sample.home <- sample %>% group_by(term) %>% count(home_ownership) %>% mutate(total = sum(n), prop = n/total)
+```
+  
   a) a stacked bar chart
+  
+```{r}
+pA <- ggplot(sample.home,
+       aes (x = term, y = n)) +
+  geom_bar(aes(fill = home_ownership), stat = "identity") +
+  theme_minimal() +
+  labs(title = "Number of Participants per Home Ownership Type, by Term Length", 
+       subtitle = 'Lending Club Loan Dataset',
+       x = 'Term Length', y = 'Number of Participants') +
+  theme(legend.position = 'top',
+        legend.justification = 'left',
+        legend.margin = margin(0,1,0,4), 
+        legend.key = element_rect(fill = NA, color = NA))
+
+
+pA
+```
+
+
   
   b) a side-by-side bar chart
   
+```{r}
+pB <- ggplot(sample.home,
+             aes (x = term, y = 100*prop)) +
+  geom_bar(aes(fill = home_ownership), stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Percentage of Participants per Home Ownership Type, by Term Length", 
+       subtitle = 'Lending Club Loan Dataset',
+       x = 'Term Length', y = 'Number of Participants') +
+  theme(legend.position = 'top',
+        legend.justification = 'left',
+        legend.margin = margin(0,1,0,4), 
+        legend.key = element_rect(fill = NA, color = NA))
+
+pB
+```
+
   c) a separate bar chart through faceting
-  
+
+```{r}
+pC <- ggplot(sample.home,
+             aes (x = term, y = 100*prop)) +
+  geom_bar(aes(fill = home_ownership), stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Percentage of Participants per Home Ownership Type, by Term Length", 
+       subtitle = 'Lending Club Loan Dataset',
+       x = 'Term Length', y = 'Number of Participants') +
+  theme(legend.position = 'top',
+        legend.justification = 'left',
+        legend.margin = margin(0,1,0,4), 
+        legend.key = element_rect(fill = NA, color = NA))
+```
+
+
   Make each graph as close as possible to "production ready", with appropriate lables, legend, title, etc. Briefly comment on which of the three graphs you would prefer when you have to explain the data to others, and why.
 
 ## 2.  Post to Social Media
