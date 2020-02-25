@@ -1,0 +1,32 @@
+---
+title: 'Data Viz: Homework 3'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading:
+  a. Chapter 4 in Kieran Healy's book "Data Visualization". A good review of what we have done so far.
+  b. Chapter 5 in Kieran Healy's book "Data Visualization". We have already seen the use of tidyverse commands, but there are some new graphs in there.
+   
+## 1. Lending Club Data
+We already started working on this at the end of class, but now finish creatin a graph that compares the distribution (in terms of percentages) of one categorical varaible (with at least three categories) for given levels of another categorical variable (with also at least 3 categories) through 
+  
+  a) a stacked bar chart
+  
+  b) a side-by-side bar chart
+  
+  c) a separate bar chart through faceting
+  
+  Make each graph as close as possible to "production ready", with appropriate lables, legend, title, etc. Briefly comment on which of the three graphs you would prefer when you have to explain the data to others, and why.
+
+## 2.  Post to Social Media
+For data of interest to you (you could use variables from the GSS, or World Bank data, any source listed under www.google.com/publicdata, or anything else), create a scatterplot that shows an interesting relationship between two variables, but also conveys information on a third (continuous or categorical) variable. Prepare a short statement about the story the graph is telling of no more than 280 characters. Save the graph in a useful format so that you can share it with others on social media. (We haven't talked about saving ggplots, but do research on your own, in particular about `ggsave`.) Use the graph and the statement to post it to your favorite social media account (this could be a tweet you are sending, a facebook post, an Instagram post, a What's App message, etc., about "Look at my cool class project from Data Visualization"). If you are not on Social Media, create a Github repository where you showcase your work.
+
+What to turn in: I need to see a screenshot of your post. 
+
+In class next week Thursday I'm going to ask some of you to share their posts or repositories!
+
+
