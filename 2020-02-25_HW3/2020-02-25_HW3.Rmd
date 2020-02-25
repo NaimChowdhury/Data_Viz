@@ -1,6 +1,9 @@
 ---
 title: 'Data Viz: Homework 3'
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -15,9 +18,10 @@ knitr::opts_chunk$set(echo = TRUE)
 We already started working on this at the end of class, but now finish creatin a graph that compares the distribution (in terms of percentages) of one categorical varaible (with at least three categories) for given levels of another categorical variable (with also at least 3 categories) through 
   
 ### Data Read-in
-```{r}
+```{r, include = FALSE}
 library(tidyr)
 library(tidyverse)
+library(RColorBrewer)
 
 
 
@@ -32,10 +36,11 @@ sample.home <- sample %>% group_by(term) %>% count(home_ownership) %>% mutate(to
   
 ```{r}
 pA <- ggplot(sample.home,
-       aes (x = term, y = n)) +
+       aes (x = term, y = 100*prop)) +
   geom_bar(aes(fill = home_ownership), stat = "identity") +
   theme_minimal() +
-  labs(title = "Number of Participants per Home Ownership Type, by Term Length", 
+  scale_fill_discrete(name = '') +
+  labs(title = "Percent of Participants per Home Ownership Type, by Term Length", 
        subtitle = 'Lending Club Loan Dataset',
        x = 'Term Length', y = 'Number of Participants') +
   theme(legend.position = 'top',
@@ -56,7 +61,8 @@ pB <- ggplot(sample.home,
              aes (x = term, y = 100*prop)) +
   geom_bar(aes(fill = home_ownership), stat = "identity", position = "dodge") +
   theme_minimal() +
-  labs(title = "Percentage of Participants per Home Ownership Type, by Term Length", 
+  scale_fill_discrete(name = '') +
+  labs(title = "Percent of Participants per Home Ownership Type, by Term Length", 
        subtitle = 'Lending Club Loan Dataset',
        x = 'Term Length', y = 'Number of Participants') +
   theme(legend.position = 'top',
@@ -74,6 +80,19 @@ pC <- ggplot(sample.home,
              aes (x = term, y = 100*prop)) +
   geom_bar(aes(fill = home_ownership), stat = "identity", position = "dodge") +
   theme_minimal() +
+  labs(title = "Percent of Participants per Home Ownership Type, by Term Length", 
+       subtitle = 'Lending Club Loan Dataset',
+       x = 'Term Length', y = 'Number of Participants') +
+  theme(legend.position = 'top',
+        legend.justification = 'left',
+        legend.margin = margin(0,1,0,4), 
+        legend.key = element_rect(fill = NA, color = NA))
+
+pC <- ggplot(sample.home, aes(x=term, y=100*prop)) + 
+  geom_bar(aes(fill = term), stat = "identity", position="dodge") +
+  facet_wrap(vars(home_ownership), ncol=5) +
+  guides(fill="none") +
+  theme_minimal() +
   labs(title = "Percentage of Participants per Home Ownership Type, by Term Length", 
        subtitle = 'Lending Club Loan Dataset',
        x = 'Term Length', y = 'Number of Participants') +
@@ -81,6 +100,8 @@ pC <- ggplot(sample.home,
         legend.justification = 'left',
         legend.margin = margin(0,1,0,4), 
         legend.key = element_rect(fill = NA, color = NA))
+
+pC
 ```
 
 

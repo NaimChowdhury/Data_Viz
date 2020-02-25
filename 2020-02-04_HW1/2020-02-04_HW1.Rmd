@@ -1,0 +1,122 @@
+---
+title: 'Data Viz.: Homework 1'
+author: "Naimul Chowdhury"
+date: "February 04, 2020"
+output: pdf_document
+---
+
+## Reading:
+  a. Chapters 1 and 2 in Kieran Healy's book "Data Visualization. Chapter 2 should mostly be familiar material. 
+  b. Read my R handout on Exploring the GSS, which I will add to after class on Thursday.
+
+
+##1. Setup
+### options
+Set up global options
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70))
+knitr::opts_chunk$set(fig.height=4, fig.width=6)
+```
+
+### libraries
+Load in needed libraries 
+```{r}
+library(tidyverse)
+library(tidyr)
+library(RColorBrewer)
+library(haven)
+```
+
+## 2. File management
+### Create variables for directories
+```{r file_management}
+project.dir <- getwd() #naeem
+output.dir <- "/Output"
+data.dir <- "C:/Users/Naeem Cho/Desktop/School Work/Data_Viz/Datasets"
+setwd(project.dir)
+getwd()
+```
+
+## 3. Importing Data
+```{r}
+GSS_Data <- read_dta(file.path(data.dir, "GSS2018.dta"))
+```
+
+## Project:
+1. Pick out a **categorical** variable (i.e., Question) from the General Social Survey and visualize its distribution. Think carefully about elements of your display (title, subtitle, choice of colors, axis labels, displaying or not displaying percentages with the bars, etc.) so that it tells a clear story. Note that there is no right answer, although there certainly can be bad displays. 
+In addition, prepare three slides that summarize the key steps you have taken in R to arrive at your final display. You may have to present these slides in class on Thursday next week. Make sure your slides use a large enough font size for all of us to see what you were doing and for us to get the general idea of the steps you have taken.
+
+I'm most interested in the _parborn_ and _granborn_ categorical variables. 
+
+Other variables of interest:
+_othlang, othlang2, livewhts, owngun, homosex, prayer, jew, relig, spkmslm, spkhomo, colcom, spkrac, colrac_
+
+
+## Can the respondent speak language other than English/Spanish?
+
+```{r}
+
+#The Color Palette
+mycols <- c(brewer.pal(11, "PRGn")[4], "steelblue", brewer.pal(11, "PRGn")[8])
+
+othlang <- GSS_Data %>%
+  select(OTHLANG)
+
+props <- 100* prop.table(table(othlang))
+props
+
+lang_table <- data.frame(othlang = c("Yes", "No", "No Answer"), props = as.vector(props))
+str(lang_table)
+
+ggplot(data= lang_table, aes(x=othlang,y=props, fill=othlang)) + 
+  geom_bar(stat="identity", color = "black") +
+  scale_fill_manual(values=mycols) + 
+  theme_classic() + ylab("Percent") + xlab("Response") +
+  scale_y_continuous(limit=c(0,100), expand=c(0,0)) +
+  ggtitle(label="Can the respondent speak language other than English/Spanish?", subtitle="Based on 2016 GSS")
+```
+
+
+```{r}
+ggplot(data = lang_table, aes(y = props, fill = othlang)) + 
+  geom_bar(aes(x = "1"), stat = "identity") + 
+  coord_polar("y") +
+  scale_fill_manual(values=mycols) + 
+  theme_classic() +
+  theme(axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        plot.title = element_text(hjust = 0.5, color = "orange") 
+        ) +
+  ggtitle(label = "Bilingual Pie Chart")
+```
+
+
+2. Repeat part 1 (including creating three slides that you may have to present), but now pick a **continuous** variable from the GSS (there aren't that many). 
+
+```{r}
+#Pulling in the data. Here, I've removed the categorical responses included in the survey. -1 is NA, 98 is "Don't know", and 99 is "No answer".
+
+mntlhlth <- GSS_Data %>%
+  select(MNTLHLTH) %>% 
+  filter(MNTLHLTH >= 0 & MNTLHLTH < 98)
+
+summary(mntlhlth)
+
+ggplot(data = mntlhlth, aes(x = MNTLHLTH, y = 100 * (..count../sum(..count..)))) +
+  geom_histogram(color = "black", fill = "pink", boundary=0, binwidth = 1, closed="left")+
+  theme_classic() +
+  ggtitle(label="Days of poor mental health past 30 days", subtitle="Based on 2016 GSS") +
+  scale_x_continuous(limits = c(0,32)) + 
+  scale_y_continuous( expand = c(0,0)) +
+  ylab("Percent(%)") + xlab("Days")
+
+```
+
+
+
+Turn in (upload) one pdf knitted from your R document which shows how you obtained both of the displays.
+Turn in (upload) the 6 slides you have created.

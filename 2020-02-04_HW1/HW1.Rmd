@@ -1,0 +1,22 @@
+---
+title: 'Data Viz: Homework 1'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading:
+  a. Chapter 1 in Kieran Healy's book "Data Visualization".
+  b. Read Section 1 and Section 2 of my R handout on "Exploring the GSS", available on Canvas.
+
+## Projects:
+1. Pick out a **categorical** variable from the 2018 General Social Survey and visualize its distribution. Think carefully about elements of your display (title, subtitle, choice of colors, axis labels, displaying or not displaying percentages with the bars, etc.) so that it tells a clear story. Note that there is no right answer. In addition, prepare three slides that summarize the key steps you have taken in R to arrive at your final display. You may have to present these slides in class. The first slide needs to show the graph you produced and you should be able to present and explain what it shows in 1 minute. The other two slides should highlight some of the R code you used to obtain your final graph, Make sure your slides use a large enough font size for all of us to see what you were doing and for us to get the general idea of the steps you have taken in R. After your presentation of the graph, I might ask you to quickly explain the R code you used and what it does.
+
+
+2. As discussed in our first class, provide a tweet (turn in a screenshot, or, if you are not using Twitter, prepare a document that looks like a tweet) on the topic of gun control. The tweet should be in the spirit of Hillary Clintron's tweet about gun control, but use a more appropriate graphical display.
+
+
+Turn in (upload) one pdf knitted from your R Markdown document with the 3 slides to Canvas.
+Separately, upload a screenshot or similar document to Canvas for project #2.
