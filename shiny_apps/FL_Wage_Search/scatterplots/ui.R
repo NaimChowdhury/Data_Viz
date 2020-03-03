@@ -1,5 +1,6 @@
 library(shiny)
 library(plotly)
+library(rsconnect)
 
 shinyUI(
   fluidPage(
@@ -21,9 +22,14 @@ shinyUI(
       mainPanel(
         plotlyOutput("distPlot"),
         br(),
-        h5(HTML("<u> <b> Parameter Estimates from Linear Regression Model: </b> </u>")),
-        tableOutput("IntSlop")
+        conditionalPanel('input.symbol == "22"' ,
+          h5(HTML("<u> <b> Parameter Estimates from Linear Regression Model: </b> </u>")),
+          tableOutput("IntSlop")
+        )
       )
     )
   )
 )
+
+
+## rsconnect;;deployApp('path/to/your/app')
