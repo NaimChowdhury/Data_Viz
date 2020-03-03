@@ -11,4 +11,11 @@ shinyServer(function(input, output, session) {
     return(df)
   })
   
+  output$endresult <- renderText({
+    hours <- input$hours
+    wages <- input$wage
+    earnings <- hours * wages
+    print(c('The total earnings of working ', hours, ' hours at $', wages, ' dollars per hour is $', earnings, 'before tax.'))
+  })
+  
 })

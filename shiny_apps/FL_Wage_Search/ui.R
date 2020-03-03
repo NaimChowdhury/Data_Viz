@@ -1,7 +1,5 @@
 library(shiny)
 library(DT)
-library(shiny)
-library(DT)
 
 shinyUI(
   fluidPage(
