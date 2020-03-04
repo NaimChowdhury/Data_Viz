@@ -1,0 +1,61 @@
+---
+title: 'Data Viz: Homework 5'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading
+Please study the following material for some basic shiny functionality: https://shiny.rstudio.com/tutorial/
+Scroll to below the video and watch the video for all the **Part 1 topics**. Also, choose 2 topics from part 2 and two topics from part 3. (For instance, the layout topic presents the `fluidRow` and `column` commands I used in the app above.)
+
+## 1. Project Internships for NCF
+Here is the shiny app that we developed so far in class. 
+
+**ui.r:**
+```
+library(shiny)
+library(DT)
+
+shinyUI(
+  fluidPage(
+    h3("Florida Wage Data"),
+    DTOutput("wagedata"),
+    fluidRow(
+      column(4, numericInput("hours", "Number of Hours", value=NA_real_, min=0)),
+      column(4, numericInput("wage", "Hourly Wage Paid", value=0)),
+      column(4, tableOutput("endresult"))
+    )
+  )
+)
+```
+
+
+**server.r:**
+```
+library(shiny)
+library(DT)
+library(readr)
+
+df <- read_csv('./data/FL2018Wages.csv') 
+
+shinyServer(function(input, output, session) {
+
+  output$wagedata <- renderDT({
+    df <- datatable(df,  filter = 'top')
+    return(df)
+  })
+
+})
+```
+
+To make this run on your computer, don't forget to change the path for where the shiny app can find the FL wage data.
+
+Your task for this HW is to include one more input that asks for the hourly wage (in $), and then provide an output that takes both the input of the number of hours worked and the hourly wage, multiplies them and dislays this product. This is what the CEO office will use for "economic impact".
+
+*What to turn in:* Turn in a screenhot from your app in action, i.e., a screenshot that shows some number of hours worked, some job descirption in the search box of the data table, the corresponding hourly waged entered in the other input, and the economic impact displayed that corresponds to these inputs. Do not turn in the ui.r and server.r.
+
+## 2. Making the app better
+After you are done with part 1, try to enhance your app by including an additional input (think how you would change the layout) that asks what type of hourly wage is desired: Entry level, median, mean or experienced. Perhaps you want to put the number of hours worked and this input on top of the page, then, after they are selected, display the data (again as a DT table), but only show the relevant colums, and finally have the required output (the economic equivalent) as an output.
