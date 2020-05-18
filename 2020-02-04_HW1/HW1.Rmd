@@ -69,17 +69,18 @@ props
 lang_table <- data.frame(othlang = c("Yes", "No"), props = as.vector(props))
 str(lang_table)
 
-ggplot(data= lang_table, aes(x=reorder(othlang,-props),y=props, fill=othlang)) + 
+ggplot(data= lang_table, aes(x=reorder(othlang,props),y=props, fill=othlang)) + 
   geom_bar(stat="identity", color = "black") +
   scale_fill_manual(values=mycols) + 
-  theme_classic() + ylab("Percent") + xlab("Response") +
+  theme_classic() + ylab("Percent(%)") + xlab("Response") +
   scale_y_continuous(limit=c(0,100), expand=c(0,0)) +
-  ggtitle(label="Can the respondent speak language other than English/Spanish?", subtitle="Based on 2018 GSS")
+  ggtitle(label="Can the respondent speak language other than English/Spanish?", subtitle="Based on 2018 GSS") +
+  annotate("text", x = c('Yes', 'No'), y = c(30.8, 69.2) -4, label = c("30.8%", "69.2%"), color = "white", size = 2)
 ```
 
 
 ```{r}
-ggplot(data = lang_table, aes(y = props, fill = othlang)) + 
+pie <- ggplot(data = lang_table, aes(y = props, fill = othlang)) + 
   geom_bar(aes(x = "1"), stat = "identity") + 
   coord_polar("y") +
   scale_fill_manual(values=mycols) + 
@@ -91,6 +92,7 @@ ggplot(data = lang_table, aes(y = props, fill = othlang)) +
         plot.title = element_text(hjust = 0.5, color = "orange") 
         ) +
   ggtitle(label = "Bilingual Pie Chart")
+
 ```
 
 
