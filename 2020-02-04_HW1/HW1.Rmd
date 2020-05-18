@@ -80,23 +80,6 @@ ggplot(data= lang_table, aes(x=reorder(othlang,props),y=props, fill=othlang)) +
 ```
 
 
-```{r}
-pie <- ggplot(data = lang_table, aes(y = props, fill = othlang)) + 
-  geom_bar(aes(x = "1"), stat = "identity") + 
-  coord_polar("y") +
-  scale_fill_manual(values=mycols) + 
-  theme_classic() +
-  theme(axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        plot.title = element_text(hjust = 0.5, color = "orange") 
-        ) +
-  ggtitle(label = "Bilingual Pie Chart")
-
-```
-
-
 
 Turn in (upload) one pdf knitted from your R document which shows how you obtained both of the displays.
 Turn in (upload) the 6 slides you have created.
