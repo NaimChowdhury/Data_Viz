@@ -1,22 +1,99 @@
 ---
-title: 'Data Viz: Homework 1'
+title: 'Data Viz.: Homework 1'
+author: "Naimul Chowdhury"
+date: "May 18, 2020"
 output: pdf_document
 ---
 
+## Reading:
+  a. Chapters 1 and 2 in Kieran Healy's book "Data Visualization. Chapter 2 should mostly be familiar material. 
+  b. Read my R handout on Exploring the GSS, which I will add to after class on Thursday.
+
+
+##1. Setup
+### options
+Set up global options
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70))
+knitr::opts_chunk$set(fig.height=4, fig.width=6)
 ```
 
-## Reading:
-  a. Chapter 1 in Kieran Healy's book "Data Visualization".
-  b. Read Section 1 and Section 2 of my R handout on "Exploring the GSS", available on Canvas.
+### libraries
+Load in needed libraries 
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+library(haven)
+```
 
-## Projects:
-1. Pick out a **categorical** variable from the 2018 General Social Survey and visualize its distribution. Think carefully about elements of your display (title, subtitle, choice of colors, axis labels, displaying or not displaying percentages with the bars, etc.) so that it tells a clear story. Note that there is no right answer. In addition, prepare three slides that summarize the key steps you have taken in R to arrive at your final display. You may have to present these slides in class. The first slide needs to show the graph you produced and you should be able to present and explain what it shows in 1 minute. The other two slides should highlight some of the R code you used to obtain your final graph, Make sure your slides use a large enough font size for all of us to see what you were doing and for us to get the general idea of the steps you have taken in R. After your presentation of the graph, I might ask you to quickly explain the R code you used and what it does.
+## 2. File management
+### Create variables for directories
+```{r file_management}
+project.dir <- getwd() #naeem
+output.dir <- "/Output"
+data.dir <- "C:/Users/Naeem Cho/Desktop/School Work/Data_Viz/Datasets"
+setwd(project.dir)
+getwd()
+```
+
+## 3. Importing Data
+```{r}
+GSS_Data <- read_dta(file.path(data.dir, "GSS2018.dta"))
+```
+
+## Project:
+1. Pick out a **categorical** variable (i.e., Question) from the General Social Survey and visualize its distribution. Think carefully about elements of your display (title, subtitle, choice of colors, axis labels, displaying or not displaying percentages with the bars, etc.) so that it tells a clear story. Note that there is no right answer, although there certainly can be bad displays. 
+In addition, prepare three slides that summarize the key steps you have taken in R to arrive at your final display. You may have to present these slides in class on Thursday next week. Make sure your slides use a large enough font size for all of us to see what you were doing and for us to get the general idea of the steps you have taken.
+
+I'm most interested in the _othlang_ and _abfelegl_ categorical variables. 
+
+Other variables of interest:
+_othlang, othlang2, livewhts, owngun, homosex, prayer, jew, relig, spkmslm, spkhomo, colcom, spkrac, colrac_
 
 
-2. As discussed in our first class, provide a tweet (turn in a screenshot, or, if you are not using Twitter, prepare a document that looks like a tweet) on the topic of gun control. The tweet should be in the spirit of Hillary Clintron's tweet about gun control, but use a more appropriate graphical display.
+## Can the respondent speak language other than English/Spanish?
+
+```{r}
+
+#The Color Palette
+mycols <- c(brewer.pal(11, "PRGn")[4], "steelblue", brewer.pal(11, "PRGn")[8])
+
+othlang <- GSS_Data %>%
+  select(othlang)
+
+props <- 100* prop.table(table(othlang))
+props
+
+lang_table <- data.frame(othlang = c("Yes", "No"), props = as.vector(props))
+str(lang_table)
+
+ggplot(data= lang_table, aes(x=reorder(othlang,-props),y=props, fill=othlang)) + 
+  geom_bar(stat="identity", color = "black") +
+  scale_fill_manual(values=mycols) + 
+  theme_classic() + ylab("Percent") + xlab("Response") +
+  scale_y_continuous(limit=c(0,100), expand=c(0,0)) +
+  ggtitle(label="Can the respondent speak language other than English/Spanish?", subtitle="Based on 2018 GSS")
+```
 
 
-Turn in (upload) one pdf knitted from your R Markdown document with the 3 slides to Canvas.
-Separately, upload a screenshot or similar document to Canvas for project #2.
+```{r}
+ggplot(data = lang_table, aes(y = props, fill = othlang)) + 
+  geom_bar(aes(x = "1"), stat = "identity") + 
+  coord_polar("y") +
+  scale_fill_manual(values=mycols) + 
+  theme_classic() +
+  theme(axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        plot.title = element_text(hjust = 0.5, color = "orange") 
+        ) +
+  ggtitle(label = "Bilingual Pie Chart")
+```
+
+
+
+Turn in (upload) one pdf knitted from your R document which shows how you obtained both of the displays.
+Turn in (upload) the 6 slides you have created.
