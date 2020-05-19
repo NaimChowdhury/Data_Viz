@@ -74,7 +74,7 @@ ggplot(data= lang_table, aes(x=reorder(othlang,props),y=props, fill=othlang)) +
   scale_fill_manual(values=mycols) + 
   theme_classic() + ylab("Percent(%)") + xlab("Response") +
   scale_y_continuous(limit=c(0,100), expand=c(0,0)) +
-  ggtitle(label="Can the respondent speak language other than English/Spanish?", subtitle="Based on 2018 GSS") +
+  ggtitle(label="Can the respondent speak a language other than English/Spanish?", subtitle="Based on 2018 General Social Survey") +
   annotate("text", x = c('Yes', 'No'), y = c(30.8, 69.2) -4, label = c("30.8%", "69.2%"), color = "white", size = 4) +
   theme(legend.position = 'none')
 ```
