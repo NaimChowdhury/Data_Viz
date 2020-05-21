@@ -1,0 +1,76 @@
+---
+title: 'Data Viz: Homework 2'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading:
+  a. Chapter 2 in Kieran Healy's book "Data Visualization". This should be very familar.
+  b. Chapter 3 in Kieran Healy's book "Data Visualization". Please pay attention to the illustration that shows how ggplot works: 
+     
+    (Tidy) Data -> Mapping (through `aes()`) -> Geoms -> Coordinates -> Labels
+     
+  Also, after reading you should understand the difference between 
+    
+  `ggplot(data=mydata, aes(x=x,y=y, size=2, color="green")) + geom_point()`
+    
+  and
+    
+  `ggplot(data=mydata, aes(x=x,y=y)) + geom_point(size=2, color=green)`
+    
+  This is the difference between MAPPING aesthetics and just SETTING aesthetics
+
+  c. Read Section 3 on my R handout on "Exploring the GSS", available on Canvas.
+  d. Read the "Manupulating Factors" R handout on Canvas
+
+
+##1. Setup
+### options
+Set up global options
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70))
+knitr::opts_chunk$set(fig.height=4, fig.width=6)
+```
+
+### libraries
+Load in needed libraries 
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+library(haven)
+```
+
+## 2. File management
+### Create variables for directories
+```{r file_management}
+project.dir <- getwd() #naeem
+output.dir <- "/Output"
+data.dir <- "C:/Users/Naeem Cho/Desktop/School Work/Data_Viz/Datasets"
+setwd(project.dir)
+getwd()
+```
+
+## 3. Importing Data
+```{r}
+GSS_Data <- read_dta(file.path(data.dir, "GSS2018.dta"))
+```
+
+## Projects:
+1. Pick a **continuous** variable from the 2018 General Social Survey and visualize its distribution through two different graphs. Prepare three slides: the first two showing your two graphs (of the same data) and a third slide highlighting some of the R code you used to obtain one of your graphs.
+
+```{r}
+h18 <- GSS_Data %>% select(height)
+
+```
+
+
+
+
+
+2. Pick one *categorical* and one *continuous* variable from the LendingClub dataset and explore the distribution through a graph. For each graph, write one short paragraph describing the distribution of the variable. (For categorical variables, perhaps mention the number of categories and the most common (or two most common) categories. For continuous variables, mention (i) shape, (ii) center, (iii) variability, and (iv) unusual features, such as outliers.
+
