@@ -64,7 +64,32 @@ GSS_Data <- read_dta(file.path(data.dir, "GSS2018.dta"))
 1. Pick a **continuous** variable from the 2018 General Social Survey and visualize its distribution through two different graphs. Prepare three slides: the first two showing your two graphs (of the same data) and a third slide highlighting some of the R code you used to obtain one of your graphs.
 
 ```{r}
-h18 <- GSS_Data %>% select(height)
+# Reading in dataset of number of hours of internet use per week
+wwwhr <- GSS_Data %>% 
+  select(wwwhr) %>% 
+  filter(wwwhr != -1 & wwwhr != 998 & wwwhr != 999 ) %>% 
+  drop_na()
+
+
+wwwhist <- wwwhr %>% 
+  ggplot(aes(x = wwwhr)) + 
+  labs(title = "Hours of Internet per Day?",
+       subtitle="Based on 2018 General Social Survey",
+       x = "Number of Hours", 
+       y = "Frequency") +
+  geom_histogram(color = "black", 
+                 fill = "#41B6C4",
+                 boundary = 0,
+                 binwidth = 1,
+                 closed = "left") +
+  geom_density() +
+  scale_y_continuous(limits = c(0,160), 
+                     breaks = seq(0,160,10)) +
+  scale_x_continuous(limits = c(-1, 160),
+                     breaks = seq(0,160, 5))
+
+wwwhist 
+
 
 ```
 
