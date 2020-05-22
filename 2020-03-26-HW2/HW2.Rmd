@@ -69,11 +69,13 @@ wwwhr <- GSS_Data %>%
   select(wwwhr) %>% 
   filter(wwwhr != -1 & wwwhr != 998 & wwwhr != 999 ) %>% 
   drop_na()
+```
 
-
+```{r}
+# Histogram of Hours of Internet per Week
 wwwhist <- wwwhr %>% 
   ggplot(aes(x = wwwhr)) + 
-  labs(title = "Hours of Internet per Day?",
+  labs(title = "Hours of Internet per Week?",
        subtitle="Based on 2018 General Social Survey",
        x = "Number of Hours", 
        y = "Frequency") +
@@ -88,13 +90,16 @@ wwwhist <- wwwhr %>%
                      breaks = seq(0,160, 5))
 
 wwwhist
+```
 
+```{r}
+# Histogram with density overlay
 wwwdensity <- wwwhr %>% 
   ggplot(aes(x = wwwhr)) + 
-  labs(title = "Hours of Internet per Day?",
+  labs(title = "Hours of Internet per Week?",
        subtitle="Based on 2018 General Social Survey",
        x = "Number of Hours", 
-       y = "Density") +
+       y = "Frequency") +
   geom_histogram(aes(y = ..count..),
                  color = "black", 
                  fill = "#41B6C4",
@@ -115,4 +120,56 @@ wwwdensity
 
 
 2. Pick one *categorical* and one *continuous* variable from the LendingClub dataset and explore the distribution through a graph. For each graph, write one short paragraph describing the distribution of the variable. (For categorical variables, perhaps mention the number of categories and the most common (or two most common) categories. For continuous variables, mention (i) shape, (ii) center, (iii) variability, and (iv) unusual features, such as outliers.
+
+## Reading in the Data
+```{r}
+lending <- read_csv(file.path(data.dir, "LendingClubLoanData.csv"))
+
+# Looking at variables to choose
+# lending %>% colnames()
+
+lending %>% select(int_rate, home_ownership) %>% drop_na()
+```
+
+
+## A Categorical Variable - Home Ownership
+```{r}
+# Color Palette
+mycols <- c(brewer.pal(9, "PuBuGn")[2], brewer.pal(9, "PuBuGn")[4], brewer.pal(9, "PuBuGn")[6])
+
+
+home.contingency <- lending %>% select(home_ownership) %>% 
+  filter(home_ownership != "ANY" & home_ownership != "OTHER" & home_ownership != "NONE") %>% 
+  table()
+
+home.contingency
+
+home.table <- data.frame(home.contingency = c("MORTGAGE","OWN", "RENT"), count = as.vector(home.contingency))
+
+home.bar <- home.table %>% ggplot( aes(x=reorder(home.contingency, -count),y=count, fill = home.contingency)) + 
+  geom_bar(stat="identity", color = "black") +
+  scale_fill_manual(values=mycols) + 
+  theme_classic() + 
+  ylab("Count") + 
+  xlab("Home Ownership Type") +
+  ggtitle(label="What is the Home Ownership Status of the Loan Recipient?", subtitle="Lending Club Loan Data") +
+  scale_y_continuous(limit=c(0,1200000), expand=c(0,0), breaks = seq(0,1200000,100000)) +
+#  annotate("text", x = c('Yes', 'No'), y = c(30.8, 69.2) -4, label = c("30.8%", "69.2%"), color = "white", size = 4) +
+  theme(legend.position = 'none')
+
+home.bar
+```
+
+## A Continuous Variable - Interest Rate
+```{r}
+
+```
+
+
+
+
+
+
+
+
 
