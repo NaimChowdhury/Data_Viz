@@ -81,15 +81,32 @@ wwwhist <- wwwhr %>%
                  fill = "#41B6C4",
                  boundary = 0,
                  binwidth = 1,
-                 closed = "left") +
-  geom_density() +
+                 closed = "left")
   scale_y_continuous(limits = c(0,160), 
                      breaks = seq(0,160,10)) +
   scale_x_continuous(limits = c(-1, 160),
                      breaks = seq(0,160, 5))
 
-wwwhist 
+wwwhist
 
+wwwdensity <- wwwhr %>% 
+  ggplot(aes(x = wwwhr)) + 
+  labs(title = "Hours of Internet per Day?",
+       subtitle="Based on 2018 General Social Survey",
+       x = "Number of Hours", 
+       y = "Density") +
+  geom_histogram(aes(y = ..count..),
+                 color = "black", 
+                 fill = "#41B6C4",
+                 
+                 binwidth = 5,
+                 closed = "left") +
+  geom_density(aes(y = 5*(..count..)), adjust = 1, size = 0.8, color = "red") +
+  theme_minimal() +
+  scale_x_continuous(limits = c(-5, 160),
+                     breaks = seq(0,160, 5))
+
+wwwdensity
 
 ```
 
