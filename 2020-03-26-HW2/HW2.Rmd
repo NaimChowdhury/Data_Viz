@@ -3,9 +3,6 @@ title: 'Data Viz: Homework 2'
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## Reading:
   a. Chapter 2 in Kieran Healy's book "Data Visualization". This should be very familar.
@@ -73,6 +70,7 @@ wwwhr <- GSS_Data %>%
 
 ```{r}
 # Histogram of Hours of Internet per Week
+
 wwwhist <- wwwhr %>% 
   ggplot(aes(x = wwwhr)) + 
   labs(title = "Hours of Internet per Week?",
@@ -83,7 +81,7 @@ wwwhist <- wwwhr %>%
                  fill = "#41B6C4",
                  boundary = 0,
                  binwidth = 1,
-                 closed = "left")
+                 closed = "left") +
   scale_y_continuous(limits = c(0,160), 
                      breaks = seq(0,160,10)) +
   scale_x_continuous(limits = c(-1, 160),
@@ -106,7 +104,10 @@ wwwdensity <- wwwhr %>%
                  
                  binwidth = 5,
                  closed = "left") +
-  geom_density(aes(y = 5*(..count..)), adjust = 1, size = 0.8, color = "red") +
+  geom_density(aes(y = 5*(..count..)), 
+               adjust = 1, 
+               size = 0.8, 
+               color = "red") +
   theme_minimal() +
   scale_x_continuous(limits = c(-5, 160),
                      breaks = seq(0,160, 5))
@@ -164,7 +165,69 @@ home.bar
 ```
 
 ## A Continuous Variable - Interest Rate
+
+Below I've created two graphical representations of the distribution of interest rates for loans in the Lending Club Loan Data. The distribution is roughly bimodal and right-skewed. The data has a variance of 2.2, and a median of 12.62%. According to base R, the data has about 41 thousand statistical outliers.
+
 ```{r}
+### Sample Statistics
+int_rates <- lending %>% select(int_rate) %>% select_if(is.numeric) %>% drop_na()
+
+sd <- int_rates %>% sapply(sd)
+var <- sqrt(sd)
+med <- int_rates %>% summarise(med = median(int_rate))
+
+OutVals = boxplot(int_rates$int_rate, plot=FALSE)$out
+```
+
+
+```{r}
+### Producing a histogram.
+
+
+intrate.hist <- int_rates %>% 
+  ggplot(aes(x = int_rate)) + 
+  labs(title = "Interest Rate for Loan Recipient",
+       subtitle="Lending Club Loan Data",
+       x = "Interest Rate (%)", 
+       y = "Frequency") +
+  geom_histogram(color = "black", 
+                 fill = "#E6AB02",
+                 boundary = 0,
+                 binwidth = 1,
+                 closed = "left") +
+  scale_y_continuous(limit=c(0,250000), 
+                     expand=c(0,0), 
+                     breaks = seq(0,250000,10000)) +
+  scale_x_continuous(limits = c(0, 35),
+                     breaks = seq(0,36, 2))
+
+intrate.hist
+```
+
+
+```{r}
+### Producing a density overlay.
+intrate.overlay <- int_rates %>% 
+  ggplot(aes(x = int_rate)) + 
+  labs(title = "Interest Rate for Loan Recipient",
+       subtitle="Lending Club Loan Data",
+       x = "Interest Rate (%)", 
+       y = "Frequency") +
+  geom_histogram(aes(y = ..count..), 
+                 color = "black", 
+                 fill = "#E6AB02",
+                 boundary = 0,
+                 binwidth = 1,
+                 closed = "left") +
+   geom_density(aes(y = ..count..), adjust = 3, size = 0.8, color = "#D53E4F")+
+  scale_y_continuous(limit=c(0,250000), 
+                     expand=c(0,0), 
+                     breaks = seq(0,250000,10000)) +
+  scale_x_continuous(limits = c(0, 35),
+                     breaks = seq(0,36, 2))
+
+
+intrate.overlay
 
 ```
 
