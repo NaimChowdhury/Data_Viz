@@ -133,6 +133,9 @@ lending %>% select(int_rate, home_ownership) %>% drop_na()
 
 
 ## A Categorical Variable - Home Ownership
+
+Below I've produced a bargraph, in descending order, of the home ownership type of loan recipients in the Lending Club data.  Although the variable initially had 6 categories, I removed 3 of the categories due to their comparably low counts. What we are left with is Mortgage, Rent, and Own. It is clear that Mortgages are the most common type of ownership, followed closely by Rent. Home owners constitute a much smaller proportion of the loan recipients.
+
 ```{r}
 # Color Palette
 mycols <- c(brewer.pal(9, "PuBuGn")[2], brewer.pal(9, "PuBuGn")[4], brewer.pal(9, "PuBuGn")[6])
