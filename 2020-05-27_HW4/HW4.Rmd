@@ -1,0 +1,60 @@
+---
+title: 'Data Viz: Homework 4'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1. Faithful Scatterplot
+Create a shiny app that shows, in the mainpanel of a sidebar layout, a scatterplot of the waiting time (on the y-axis) against the eruption time (on the x-axis), and where the user can select, in the sidebarpanel
+  
+  i) the color of the dots appearing in the scatterplot from a drop-down menu that has at least four options for different colors,
+  
+  ii) the shape of the plotting symbols to be either dots, squares or triangles.
+  
+The scatterplot should respond to the selection of these two inputs by plotting the choosen color and symbol.
+
+Upload, to Canvas, both the `ui.r` and `server.r` file of your app. Here are the `ui.r` and `server.r` code we created at the end of class yesterday:
+
+**ui.r:**
+```
+library(shiny)
+shinyUI(
+  fluidPage(
+    titlePanel("Old Faithful Geyser Data"),
+    sidebarLayout(
+      sidebarPanel(
+        sliderInput("bins",
+                    "Number of Bins:",
+                    min = 1,
+                    max = 100,
+                    value = 37),
+        radioButtons("color", "Choose Color", 
+                     choices = list(Red="red",Blue="blue", Gray="gray"),
+                     selected="blue", inline=TRUE
+        )
+      ),
+      mainPanel(
+        plotOutput("distPlot")
+      )
+    )
+  )
+)
+```
+
+
+**server.r:**
+```
+library(shiny)
+shinyServer(function(input, output, session) {
+  output$distPlot <- renderPlot({
+    x    <- faithful[, 2]
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    p <- hist(x, breaks = bins, col = input$color, border = 'white')
+    return(p)
+  })
+})
+```
