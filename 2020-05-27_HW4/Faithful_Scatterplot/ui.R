@@ -16,9 +16,12 @@ shinyUI(
                              choices = brewer.pal(n = 8, name = "Dark2"),
                              selected="#7570B3",
                 ),
+                selectInput("shape", "Choose Shape",
+                            choices = list(Circle = 16, Square = 15, Diamond = 18, Triangle = 17)
+                            )
             ),
             mainPanel(
-                plotOutput("distPlot")
+                plotOutput("scatterPlot")
             )
         )
     )

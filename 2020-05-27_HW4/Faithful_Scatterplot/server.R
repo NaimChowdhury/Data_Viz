@@ -1,9 +1,13 @@
 library(shiny)
+library(RColorBrewer)
+library(ggplot2)
 shinyServer(function(input, output, session) {
-    output$distPlot <- renderPlot({
-        x    <- faithful[, 2]
+    output$scatterPlot <- renderPlot({
+        x <- faithful[,1]
+        y <- faithful[,2]
         bins <- seq(min(x), max(x), length.out = input$bins + 1)
-        p <- hist(x, breaks = bins, col = input$color, border = 'white')
+        p <- ggplot(faithful, aes(x = waiting, y = eruptions))+
+            geom_point(shape = as.numeric(input$shape), color = input$color)
         return(p)
     })
 })
