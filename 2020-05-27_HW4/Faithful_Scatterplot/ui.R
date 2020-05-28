@@ -1,6 +1,7 @@
 
 # Define UI for application that draws a histogram
 library(shiny)
+library(RColorBrewer)
 shinyUI(
     fluidPage(
         titlePanel("Old Faithful Geyser Data"),
@@ -11,10 +12,10 @@ shinyUI(
                             min = 1,
                             max = 100,
                             value = 37),
-                radioButtons("color", "Choose Color", 
-                             choices = list(Red="red",Blue="blue", Gray="gray"),
-                             selected="blue", inline=TRUE
-                )
+                selectInput("color", "Choose Color", 
+                             choices = brewer.pal(n = 8, name = "Dark2"),
+                             selected="#7570B3",
+                ),
             ),
             mainPanel(
                 plotOutput("distPlot")
