@@ -14,7 +14,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  output$table <- renderDataTable(mtcars, options = list(pageLength = 5))
+  output$table <- renderDataTable(mtcars, options = list(searching = FALSE, ordering = FALSE))
 }
 
 # Run the application 
