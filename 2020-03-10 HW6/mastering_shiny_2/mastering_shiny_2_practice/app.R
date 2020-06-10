@@ -10,8 +10,11 @@
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-    "Hello, world!"
+ui <- fluidPage( #layout function that sets up basic visuals tructure
+#input control that lets the user interact with the app by providing a value
+    selectInput("dataset", label = "Dataset", choices = ls("package:datasets")),
+    verbatimTextOutput("summary"), # output controls that tell shiny where to put the rendered output
+    tableOutput("table")
 )
 
 # Define server logic required to draw a histogram
