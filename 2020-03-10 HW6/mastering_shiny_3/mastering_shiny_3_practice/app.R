@@ -10,13 +10,11 @@
 library(shiny)
 
 ui <- fluidPage(
-  tableOutput("static"),
-  dataTableOutput("dynamic")
+  plotOutput("plot", width = "400px")
 )
 
 server <- function(input, output, session) {
-  output$static <- renderTable(head(mtcars))
-  output$dynamic <- renderDataTable(mtcars, options = list(pageLength = 5))
+  output$plot <- renderPlot(plot(1:5), res = 96)
 }
 
 
