@@ -10,11 +10,11 @@
 library(shiny)
 
 ui <- fluidPage(
-  numericInput("count", label = "Number of values", value = 100)
+  textOutput("greeting")
 )
 
 server <- function(input, output, session) {
-  input$count <- 10
+  output$greeting <- renderText("Hello human!")
 }
 
 #This don't work because it needs to be reactive.
