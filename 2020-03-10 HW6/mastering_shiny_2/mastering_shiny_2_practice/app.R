@@ -19,10 +19,18 @@ ui <- fluidPage( #layout function that sets up basic visuals tructure
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  dataset <- reactive({
+      get(input$dataset, "package:datasets")
+    })
+    
   output$summary <- renderPrint({
-    dataset <- get(input$dataset, "package:datasets")
-    dataset
+    summary(dataset())
   })
+  
+  output$table <- renderTable({
+    dataset()
+  })
+  
 }
 
 # Run the application 
