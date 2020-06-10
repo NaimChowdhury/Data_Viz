@@ -10,18 +10,18 @@
 library(shiny)
 
 ui <- fluidPage(
-  fluidRow(
-    actionButton("click", "Click me!", class = "btn-danger"),
-    actionButton("drink", "Drink me!", class = "btn-lg btn-success")
-  ),
-  fluidRow(
-    actionButton("eat", "Eat me!", class = "btn-block")
-  )
-  
+  textOutput("text"),
+  verbatimTextOutput("code")
 )
 
 server <- function(input, output, session) {
-
+  output$text <- renderText({
+    "Hello friend!"
+  })
+  
+  output$code <- renderPrint({
+    summary(1:10)
+  })
 }
 
 
