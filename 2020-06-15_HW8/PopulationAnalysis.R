@@ -29,3 +29,6 @@ population <- population %>%
          R_birth_2019) %>% 
   drop_na()
 
+# joining datasets
+join <- join(counties, population, by = c("subregion"="county"))
+
