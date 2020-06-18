@@ -29,6 +29,11 @@ population <- population %>%
          R_birth_2019) %>% 
   drop_na()
 
+#removing the order column, which messes with the join
+counties <- counties %>% select(-order)
+
+population$county <- gsub("([A-Za-z]+).*", "\\1", population$county)
+
 # joining datasets
-join <- join(counties, population, by = c("subregion"="county"))
+join <- inner_join(population, counties, by = c("county"="subregion"))
 
