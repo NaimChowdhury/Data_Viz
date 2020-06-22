@@ -61,3 +61,13 @@ fit1 <- glm(default1 ~ balance, family = binomial(link = logit), data = default.
 summary(fit1)
 ```
 
+```{r}
+## increase in odds 
+exp(0.005499)
+```
+
+```{r}
+# Confidence interval:
+exp(confint(fit1))
+```
+
