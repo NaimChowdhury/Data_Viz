@@ -84,10 +84,23 @@ balance.new <- seq(0, max(default.df$balance1) + 1000, 1)
 
 
 # Creating data to plot
-plotdata <- tibble(balance = balance.new, log.odds = predict(fit1, 
-                                                             newdata = data.frame(balance = balance.new, type = "link"),
-                                                              odds = exp(log.odds),
-                                                              prob = odds/(1+odds)))
+plotdata <- tibble(
+  balance = balance.new,
+  log.odds = predict(fit1,newdata = data.frame(balance = balance.new), type = "link"),
+  odds = exp(log.odds),
+  prob = odds/(1+odds)
+)
 ```
+
+```{r}
+# Plotting the probability curve
+plot.probs <- ggplot(plotdata, 
+                     aes(x = balance, y = prob)) +
+  geom_line(color = "blue", size = 1) +
+  theme_bw()
+
+plot.probs
+```
+
 
 
