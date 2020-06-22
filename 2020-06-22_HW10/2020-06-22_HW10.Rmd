@@ -62,12 +62,20 @@ summary(fit1)
 ```
 
 ```{r}
-## increase in odds 
-exp(0.005499)
+## increase in odds for 100 dollar increase in balance
+exp(0.5499)
 ```
 
 ```{r}
 # Confidence interval:
 exp(confint(fit1))
 ```
+
+__Interpretation:__
+
+The odds of defaulting on a loan are predicted to increase 1.7 fold for every 100 dollar increase in loan balance.
+
+
+## Part b.
+
 
