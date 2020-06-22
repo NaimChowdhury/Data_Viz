@@ -95,7 +95,14 @@ plotdata <- tibble(
 
 predictions <- predict(fit1, newdata = data.frame(balance = balance.new), type = "link", se.fit = TRUE)
 
-predictions$se.fit
+se.log.odds <- predictions$se.fit
+
+plotdata <- plotdata %>% 
+  mutate(
+    log.odds.LB = log.odds - 1.96*se.log.odds,
+    log.odds.UB = log.odds + 1.96*se.log.odds
+  )
+
 
 ```
 
