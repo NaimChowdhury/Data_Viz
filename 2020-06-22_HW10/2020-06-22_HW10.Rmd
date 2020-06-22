@@ -51,7 +51,7 @@ default <- read_csv(file.path(data.dir, "Default.csv"))
 # Transform all the Yes and No string values into booleans
 default.df <- default %>%
   mutate(default1 = ifelse(default == "Yes",TRUE, FALSE)) %>%
-  select(default1, balance)
+  select(default1, balance, student)
 ```
 
 
@@ -126,6 +126,33 @@ plot.probs <- ggplot(plotdata,
 
 plot.probs
 ```
+
+## Part c.
+```{r}
+# Fitting a logistic model with student added as a variable
+fit2 <- glm(default1 ~ balance + student, family = binomial(link = logit), data = default.df)
+
+summary(fit2)
+```
+
+
+```{r}
+## increase in odds for 100 dollar increase in balance when not a student
+exp(0.5738)
+
+## decrease in odds for students
+exp(-0.715)
+```
+
+```{r}
+# Confidence interval:
+exp(confint(fit1))
+```
+
+__Interpretation__:
+
+The odds of defaulting on a loan are predicted to increase 1.7 fold for every 100 dollar increase in loan balance, whether or not you are a student. However, the odds of defaulting on a loan are predicted to decrease by half for those who are studends.
+
 
 
 
