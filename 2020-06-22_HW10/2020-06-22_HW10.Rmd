@@ -47,9 +47,17 @@ default <- read_csv(file.path(data.dir, "Default.csv"))
 
 ```{r}
 # Transform all the Yes and No string values into booleans
-default <- default %>%
+default.df <- default %>%
   mutate(default1 = ifelse(default == "Yes",TRUE, FALSE)) %>%
   select(default1, balance)
+```
 
+
+```{r}
+# Fitting the logistic regression
+
+fit1 <- glm(default1 ~ balance, family = binomial(link = logit), data = default.df)
+
+summary(fit1)
 ```
 
