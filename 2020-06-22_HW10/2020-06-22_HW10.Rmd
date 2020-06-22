@@ -103,6 +103,13 @@ plotdata <- plotdata %>%
     log.odds.UB = log.odds + 1.96*se.log.odds
   )
 
+plotdata <- plotdata %>% 
+  mutate(
+    odds.LB = exp(log.odds.LB),
+    odds.UB = exp(log.odds.UB),
+    prob.LB = odds.LB/(1+odds.LB),
+    prob.UB = odds.UB/(1+odds.UB)
+  )
 
 ```
 
