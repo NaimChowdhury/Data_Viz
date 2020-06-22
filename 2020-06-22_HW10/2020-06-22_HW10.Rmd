@@ -119,7 +119,10 @@ plot.probs <- ggplot(plotdata,
                      aes(x = balance, y = prob)) +
   geom_line(color = "blue", size = 1) +
   geom_ribbon(aes(ymin = prob.LB, ymax = prob.UB), fill = "blue", alpha = 0.1)+
-  theme_bw()
+  theme_bw() +
+  labs(title = "Loan Balance and its Relationship to Probability of Defaulting") + 
+  xlab("Loan Balance") +
+  ylab("Probability of Defaulting")
 
 plot.probs
 ```
