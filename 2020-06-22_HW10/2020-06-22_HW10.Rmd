@@ -78,4 +78,16 @@ The odds of defaulting on a loan are predicted to increase 1.7 fold for every 10
 
 ## Part b.
 
+```{r}
+# sequence of balances
+balance.new <- seq(0, max(default.df$balance1) + 1000, 1)
+
+
+# Creating data to plot
+plotdata <- tibble(balance = balance.new, log.odds = predict(fit1, 
+                                                             newdata = data.frame(balance = balance.new, type = "link"),
+                                                              odds = exp(log.odds),
+                                                              prob = odds/(1+odds)))
+```
+
 
