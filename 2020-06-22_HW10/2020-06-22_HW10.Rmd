@@ -19,13 +19,15 @@ knitr::opts_chunk$set(fig.height=4, fig.width=6)
 Load in needed libraries 
 ```{r, include=FALSE}
 library(tidyverse)
-library(RColorBrewer)
+# library(RColorBrewer)
 library(ggplot2)
-library(haven)
-library(plotly)
+# library(haven)
+# library(plotly)
 #install.packages('rgl')
-library(rgl)
-library(ISLR)
+# library(rgl)
+# library(ISLR)
+# install.packages('cowplot')
+library(cowplot)
 ```
 
 ## 2. File management
@@ -91,6 +93,9 @@ plotdata <- tibble(
   prob = odds/(1+odds)
 )
 
+predictions <- predict(fit1, newdata = data.frame(balance = balance.new), type = "link", se.fit = TRUE)
+
+predictions$se.fit
 
 ```
 
