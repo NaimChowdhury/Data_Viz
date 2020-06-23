@@ -19,7 +19,7 @@ knitr::opts_chunk$set(fig.height=4, fig.width=6)
 Load in needed libraries 
 ```{r, include=FALSE}
 library(tidyverse)
-# library(RColorBrewer)
+library(RColorBrewer)
 library(ggplot2)
 # library(haven)
 # library(plotly)
@@ -152,6 +152,33 @@ exp(confint(fit1))
 __Interpretation__:
 
 The odds of defaulting on a loan are predicted to increase 1.7 fold for every 100 dollar increase in loan balance, whether or not you are a student. However, the odds of defaulting on a loan are predicted to decrease by half for those who are studends.
+
+## Part d.
+
+```{r}
+# forming the data
+
+mygrid <- expand.grid(balance = balance.new, student = default.df$student)
+head(mygrid)
+```
+
+```{r}
+predictions <- predict(fit2, newdata = mygrid, type = "link", se.fit = TRUE)
+
+plotdata <- tibble(
+  balance = mygrid$balance,
+  student = mygrid$student,
+  log.odds = predictions$fit,
+  log.odds.LB = log.odds - 1.96*predictions$se.fit,
+  log.odds.UB = log.odds + 1.96*predictions$se.fit,
+  prob = exp(log.odds)/(1+exp(log.odds)),
+  prob.LB = exp(log.odds.LB)/(1+exp(log.odds.LB)),
+  prob.UB = exp(log.odds.UB)/(1+exp(log.odds.UB))
+)
+
+
+
+```
 
 
 
