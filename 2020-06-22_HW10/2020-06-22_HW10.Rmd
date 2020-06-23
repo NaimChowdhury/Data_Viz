@@ -82,7 +82,7 @@ The odds of defaulting on a loan are predicted to increase 1.7 fold for every 10
 
 ```{r}
 # sequence of balances
-balance.new <- seq(0, max(default.df$balance1) + 1000, 1)
+balance.new <- seq(0, max(default.df$balance) + 1000, 1)
 
 
 # Creating data to plot
@@ -157,6 +157,8 @@ The odds of defaulting on a loan are predicted to increase 1.7 fold for every 10
 
 ```{r}
 # forming the data
+balance.new <- seq(0, max(default.df$balance), 3)
+
 
 mygrid <- expand.grid(balance = balance.new, student = default.df$student)
 head(mygrid)
@@ -176,7 +178,19 @@ plotdata <- tibble(
   prob.UB = exp(log.odds.UB)/(1+exp(log.odds.UB))
 )
 
+mycol <- brewer.pal(8, "Dark2")[4:1]
 
+plot.probs <- ggplot(data = plotdata, aes(x = balance, y = prob, color = student)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = mycol, name = "Color:") +
+  scale_fill_manual(values = mycol, name = "Color:") +
+  theme_bw() +
+  theme(legend.position = "top") +
+  labs(title = "Probability of Defaulting vs Balance Controlled for Student Status") +
+  xlab("Loan Balance") +
+  ylab("Probability of Defaulting")
+  
+plot.probs
 
 ```
 
