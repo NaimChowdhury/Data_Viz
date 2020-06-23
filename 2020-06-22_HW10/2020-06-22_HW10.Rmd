@@ -182,6 +182,7 @@ mycol <- brewer.pal(8, "Dark2")[4:1]
 
 plot.probs <- ggplot(data = plotdata, aes(x = balance, y = prob, color = student)) +
   geom_line(size = 1) +
+  geom_ribbon(aes(ymin = prob.LB, ymax = prob.UB), fill = student)+
   scale_color_manual(values = mycol, name = "Color:") +
   scale_fill_manual(values = mycol, name = "Color:") +
   theme_bw() +
