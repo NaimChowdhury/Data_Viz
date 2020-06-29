@@ -96,5 +96,45 @@ summary(fit2)
 ```
   
   
+```{r}
+# forming the data
+width.new <- seq(0, max(crab$width), 3)
+
+
+mygrid <- expand.grid(width = width.new, color1 = crab$color1)
+head(mygrid)
+```
+
+```{r}
+predictions <- predict(fit2, newdata = mygrid, type = "link", se.fit = TRUE)
+
+plotdata <- tibble(
+  balance = mygrid$balance,
+  student = mygrid$student,
+  log.odds = predictions$fit,
+  log.odds.LB = log.odds - 1.96*predictions$se.fit,
+  log.odds.UB = log.odds + 1.96*predictions$se.fit,
+  prob = exp(log.odds)/(1+exp(log.odds)),
+  prob.LB = exp(log.odds.LB)/(1+exp(log.odds.LB)),
+  prob.UB = exp(log.odds.UB)/(1+exp(log.odds.UB))
+)
+
+mycol <- brewer.pal(8, "Dark2")[4:1]
+
+plot.probs <- ggplot(data = plotdata, aes(x = balance, y = prob, color = student)) +
+  geom_line(size = 1) +
+  geom_ribbon(aes(ymin = prob.LB, ymax = prob.UB, fill = student)) +
+  scale_color_manual(values = mycol, name = "Student:") +
+  scale_fill_manual(values = mycol, name = "Student:") +
+  theme_bw() +
+  theme(legend.position = "top") +
+  labs(title = "Probability of Defaulting vs Balance Controlled for Student Status") +
+  xlab("Loan Balance") +
+  ylab("Probability of Defaulting")
+  
+plot.probs
+
+```
+
   d. Perhaps a linear effect of width (on the log-odds scale) is too restrictive. Fit the model that allows a smooth effect of width by using splines, i.e, use `s(width)` instead of `width` in the right-hand side of the model formulation, and use `gam` from the `mgcv` R library instead of `glm` for fitting the model. Please refer to the two most recent R handouts on *Visualizing Uncertainty* and *Regression Splines in Poisson Models*. Kepp color in the model as a regular effect. Vizualize the fitted model both on the log-odds scale and the probability scale. How would you interpret the effect of width?
   
