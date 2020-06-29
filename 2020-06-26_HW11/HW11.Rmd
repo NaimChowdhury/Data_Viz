@@ -79,7 +79,7 @@ exp(-1.3005)
 exp(confint(fit1))
 ```
 
-__Interpretation__: The odds of  a satellite nearby are predicted to increase 1.6 fold (With a 95% confidence interval of 1.33 to 2.00) for every 1kg increase in the width of a crab.
+__Interpretation__: The odds of  a satellite nearby are predicted to increase 1.6 fold (With a 95% confidence interval of 1.33 to 2.00) for every unit increase in the width of a crab.
 
   b. Explain the effect of color for this model. Is the effect of color the same at any given width?
 
@@ -94,7 +94,27 @@ fit2 <- glm(sat ~ width + color1 + width*color1,family = binomial(link = logit),
 # Summary with hypothesis testing results
 summary(fit2)
 ```
-  
+
+```{r}
+# Computing the increase in odds
+
+# Per unit Weight
+exp(0.5222)
+# For Color1 = dark
+exp(6.9578)
+# For interaction term
+exp(-0.3217)
+# Per unit weight when color1 = dark
+exp(0.5222) + exp(-0.3217)
+```
+
+```{r}
+# Computing the confidence intervals
+exp(confint(fit2))
+```
+
+
+__Interpretation__: The odds of  a satellite nearby are predicted to increase 1.7 fold (With a 95% confidence interval of 1.36 to 2.14) for every unit increase in the width of a __medium__ colored crab. When the crab is __dark__, the odds of a satellite being nearby increase by 2.4 for every unit increase in the width of a crab.
   
 ```{r}
 # forming the data
@@ -149,6 +169,12 @@ plot.probs <- ggplot(data = plotdata, aes(x = width, y = prob, color = color1)) 
 plot.probs
 
 ```
+
+
+
+
+
+
 
   d. Perhaps a linear effect of width (on the log-odds scale) is too restrictive. Fit the model that allows a smooth effect of width by using splines, i.e, use `s(width)` instead of `width` in the right-hand side of the model formulation, and use `gam` from the `mgcv` R library instead of `glm` for fitting the model. Please refer to the two most recent R handouts on *Visualizing Uncertainty* and *Regression Splines in Poisson Models*. Kepp color in the model as a regular effect. Vizualize the fitted model both on the log-odds scale and the probability scale. How would you interpret the effect of width?
   
