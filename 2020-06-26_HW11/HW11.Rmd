@@ -128,11 +128,25 @@ plot.log.odds <- ggplot(data = plotdata, aes(x = width, y = log.odds, color = co
   scale_fill_manual(values = mycol, name = "Color:") +
   theme_bw() +
   theme(legend.position = "top") +
-  labs(title = "") +
-  xlab("") +
-  ylab("")
+  labs(title = "Log-Odds of Satellite Distance vs. Crab Width") +
+  xlab("Width") +
+  ylab("Log-Odds")
   
 plot.log.odds
+
+
+plot.probs <- ggplot(data = plotdata, aes(x = width, y = prob, color = color1)) +
+  geom_line(size = 1) +
+  geom_ribbon(aes(ymin = prob.LB, ymax = prob.UB, fill = color1), color = NA, alpha = 0.5) +
+  scale_color_manual(values = mycol, name = "Color:") +
+  scale_fill_manual(values = mycol, name = "Color:") +
+  theme_bw() +
+  theme(legend.position = "top") +
+  labs(title = "Probability of Satellite distance vs. Width By Crab Color") +
+  xlab("Width") +
+  ylab("Probability")
+  
+plot.probs
 
 ```
 
