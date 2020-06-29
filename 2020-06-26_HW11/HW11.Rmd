@@ -61,7 +61,29 @@ crab <- crab.df %>%
 
   a. Fit a logistic regression model that includes both **width** and **color** (the new variable) as predictors. Explain and visualize the effect of width. (You can refer to the *Solutions to HW10* handout to revisit what we discussed in class.)
   
+```{r}
+# Creating the logistic regression model
+fit1 <- glm(sat ~ width + color1, family = binomial(link = logit), data = crab)
+# Checking for statistical significance.
+summary(fit1)
+```
+
+```{r}
+# Computing the increase in odds
+exp(0.4782)
+exp(-1.3005)
+```
+
+```{r}
+# Computing the confidence intervals
+exp(confint(fit1))
+```
+
+__Interpretation__: The odds of  a satellite nearby are predicted to increase 1.6 fold (With a 95% confidence interval of 1.33 to 2.00) for every 1kg increase in the width of a crab.
+
   b. Explain the effect of color for this model. Is the effect of color the same at any given width?
+
+
   
   c. Fit the logistic regression model that allows an interaction between width and color. Visualize the fitted log-odds and the fitted probabilities. Explain the effect of width.
   
