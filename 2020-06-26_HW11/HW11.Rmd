@@ -87,5 +87,14 @@ __Interpretation__: The odds of  a satellite nearby are predicted to increase 1.
   
   c. Fit the logistic regression model that allows an interaction between width and color. Visualize the fitted log-odds and the fitted probabilities. Explain the effect of width.
   
+```{r}
+# Logistic Regression with Interaction
+fit2 <- glm(sat ~ width + color1 + width*color,family = binomial(link = logit), crab)
+
+# Summary with hypothesis testing results
+summary(fit2)
+```
+  
+  
   d. Perhaps a linear effect of width (on the log-odds scale) is too restrictive. Fit the model that allows a smooth effect of width by using splines, i.e, use `s(width)` instead of `width` in the right-hand side of the model formulation, and use `gam` from the `mgcv` R library instead of `glm` for fitting the model. Please refer to the two most recent R handouts on *Visualizing Uncertainty* and *Regression Splines in Poisson Models*. Kepp color in the model as a regular effect. Vizualize the fitted model both on the log-odds scale and the probability scale. How would you interpret the effect of width?
   
