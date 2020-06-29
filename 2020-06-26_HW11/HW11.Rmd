@@ -1,0 +1,60 @@
+---
+title: 'Data Viz: Homework 11'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##1. Setup
+### options
+Set up global options
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=70))
+knitr::opts_chunk$set(fig.height=4, fig.width=6)
+```
+
+### libraries
+Load in needed libraries 
+```{r, include=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+library(ggplot2)
+#library(haven)
+#library(plotly)
+#install.packages('rgl')
+#library(rgl)
+library(ISLR)
+```
+
+## 2. File management
+### Create variables for directories
+```{r file_management, include=FALSE}
+project.dir <- getwd() #naeem
+output.dir <- "/Output"
+data.dir <- "C:/Users/Naeem Cho/Desktop/School Work/Data_Viz/Datasets"
+setwd(project.dir)
+getwd()
+```
+
+## 3. Importing Data
+```{r, echo = FALSE, include=FALSE}
+crab.df <- read_csv(file.path(data.dir, "crab.csv"))
+```
+
+
+## 1. Visualizing Interactions
+Refer to the horseshoe crab dataset on Canvas. Using the existing color variable, create a new color variable with only *two categories*, medium (which consists of all colors that have "medium" in their name) and dark.
+
+  a. Fit a logistic regression model that includes both **width** and **color** (the new variable) as predictors. Explain and visualize the effect of width. (You can refer to the *Solutions to HW10* handout to revisit what we discussed in class.)
+  
+  b. Explain the effect of color for this model. Is the effect of color the same at any given width?
+  
+  c. Fit the logistic regression model that allows an interaction between width and color. Visualize the fitted log-odds and the fitted probabilities. Explain the effect of width.
+  
+  d. Perhaps a linear effect of width (on the log-odds scale) is too restrictive. Fit the model that allows a smooth effect of width by using splines, i.e, use `s(width)` instead of `width` in the right-hand side of the model formulation, and use `gam` from the `mgcv` R library instead of `glm` for fitting the model. Please refer to the two most recent R handouts on *Visualizing Uncertainty* and *Regression Splines in Poisson Models*. Kepp color in the model as a regular effect. Vizualize the fitted model both on the log-odds scale and the probability scale. How would you interpret the effect of width?
+  
