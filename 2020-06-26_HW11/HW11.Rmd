@@ -89,7 +89,7 @@ __Interpretation__: The odds of  a satellite nearby are predicted to increase 1.
   
 ```{r}
 # Logistic Regression with Interaction
-fit2 <- glm(sat ~ width + color1 + width*color,family = binomial(link = logit), crab)
+fit2 <- glm(sat ~ width + color1 + width*color1,family = binomial(link = logit), crab)
 
 # Summary with hypothesis testing results
 summary(fit2)
@@ -109,8 +109,8 @@ head(mygrid)
 predictions <- predict(fit2, newdata = mygrid, type = "link", se.fit = TRUE)
 
 plotdata <- tibble(
-  balance = mygrid$balance,
-  student = mygrid$student,
+  width = mygrid$width,
+  color1 = mygrid$color1,
   log.odds = predictions$fit,
   log.odds.LB = log.odds - 1.96*predictions$se.fit,
   log.odds.UB = log.odds + 1.96*predictions$se.fit,
@@ -121,18 +121,18 @@ plotdata <- tibble(
 
 mycol <- brewer.pal(8, "Dark2")[4:1]
 
-plot.probs <- ggplot(data = plotdata, aes(x = balance, y = prob, color = student)) +
+plot.log.odds <- ggplot(data = plotdata, aes(x = width, y = log.odds, color = color1)) +
   geom_line(size = 1) +
-  geom_ribbon(aes(ymin = prob.LB, ymax = prob.UB, fill = student)) +
-  scale_color_manual(values = mycol, name = "Student:") +
-  scale_fill_manual(values = mycol, name = "Student:") +
+  geom_ribbon(aes(ymin = log.odds.LB, ymax = log.odds.UB, fill = color1), color = NA, alpha = 0.5) +
+  scale_color_manual(values = mycol, name = "Color:") +
+  scale_fill_manual(values = mycol, name = "Color:") +
   theme_bw() +
   theme(legend.position = "top") +
-  labs(title = "Probability of Defaulting vs Balance Controlled for Student Status") +
-  xlab("Loan Balance") +
-  ylab("Probability of Defaulting")
+  labs(title = "") +
+  xlab("") +
+  ylab("")
   
-plot.probs
+plot.log.odds
 
 ```
 
