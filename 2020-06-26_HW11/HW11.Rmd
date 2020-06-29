@@ -50,6 +50,15 @@ crab.df <- read_csv(file.path(data.dir, "crab.csv"))
 ## 1. Visualizing Interactions
 Refer to the horseshoe crab dataset on Canvas. Using the existing color variable, create a new color variable with only *two categories*, medium (which consists of all colors that have "medium" in their name) and dark.
 
+```{r}
+crab <- crab.df %>% 
+  mutate(sat = satellite > 0) %>% 
+  mutate(color1 = fct_recode(factor(color), medium = "1", medium = "2", medium = "3", dark = "4"), weight  = weight/1000)
+
+
+```
+
+
   a. Fit a logistic regression model that includes both **width** and **color** (the new variable) as predictors. Explain and visualize the effect of width. (You can refer to the *Solutions to HW10* handout to revisit what we discussed in class.)
   
   b. Explain the effect of color for this model. Is the effect of color the same at any given width?
