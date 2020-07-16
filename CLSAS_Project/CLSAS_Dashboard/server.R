@@ -17,7 +17,7 @@ shinyServer(function(input, output, session) {
     df <- reactiveFileReader(
         intervalMillis = 10000, 
         session = session,
-        filePath = './data/membership_data.csv',
+        filePath = './data/all_membership_info.csv',
         readFunc = read_csv)
     
     output$mydata <-renderTable({df()})
@@ -42,7 +42,7 @@ shinyServer(function(input, output, session) {
         nc <- ncol(df())
         infoBox(
             value = nc,
-            title = "Colums",
+            title = "Columns",
             icon = icon("list"),
             color = "purple",
             fill=TRUE)
