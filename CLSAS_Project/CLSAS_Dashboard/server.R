@@ -28,4 +28,24 @@ shinyServer(function(input, output, session) {
         # return(p)
     })
     
+    output$nrows <- renderValueBox({
+        nr <- nrow(df())
+        valueBox(
+            value = nr,
+            subtitle = "Number of Rows",
+            icon = icon("table"),
+            color = if (nr <=6) "yellow" else "aqua"
+        )
+    })
+    
+    output$ncol <- renderInfoBox({
+        nc <- ncol(df())
+        infoBox(
+            value = nc,
+            title = "Colums",
+            icon = icon("list"),
+            color = "purple",
+            fill=TRUE)
+    })
+    
 })
