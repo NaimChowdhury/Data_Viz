@@ -8,19 +8,17 @@
 #
 
 library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(readr)
 
-# Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-
-    output$distPlot <- renderPlot({
-
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
-    })
-
+shinyServer(function(input, output, session) {
+    
+    df <- reactiveFileReader(
+        intervalMillis = 10000, 
+        session = session,
+        filePath = './data/membership_data.csv',
+        readFunc = read_csv)
+    
+    
 })
