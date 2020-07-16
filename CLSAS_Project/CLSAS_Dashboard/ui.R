@@ -1,10 +1,10 @@
 #
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
+# This is the CLSAS Membership Dashboard
+# To be hosted on shiny, accessible by password.
 #
-# Find out more about building applications with Shiny here:
+# 
 #
-#    http://shiny.rstudio.com/
+# 
 #
 
 library(shiny)
