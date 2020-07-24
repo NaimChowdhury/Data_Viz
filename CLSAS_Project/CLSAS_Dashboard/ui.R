@@ -24,7 +24,7 @@ dashboardPage(
                 status="info", 
                 title="Plot",
                 solidHeader = TRUE,
-                plotOutput("myplot")
+                plotOutput("stateplot")
             ),
             box(width=6, 
                 status="warning", 
@@ -32,7 +32,7 @@ dashboardPage(
                 solidHeader = TRUE, 
                 collapsible = TRUE, 
                 footer="Read Remotely from File",
-                tableOutput("mydata")
+                tableOutput("statedata")
             )
         ),
         ## Add some more info boxes
